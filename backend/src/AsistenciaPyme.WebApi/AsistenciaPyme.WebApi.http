@@ -1,0 +1,6 @@
+@AsistenciaPyme.WebApi_HostAddress = http://localhost:5264
+
+GET {{AsistenciaPyme.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

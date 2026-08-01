@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/AsistenciaPyme.Application/AsistenciaPyme.Application.csproj" Id="86c02ff2-0cad-40a4-b27b-d1462c61bf26" />
+  <Project Path="src/AsistenciaPyme.Domain/AsistenciaPyme.Domain.csproj" Id="9468b336-2580-4104-8aab-333035f0b5ef" />
+  <Project Path="src/AsistenciaPyme.Infrastructure/AsistenciaPyme.Infrastructure.csproj" Id="aaa8ff15-1960-4189-afde-4cbd34394bbe" />
+  <Project Path="src/AsistenciaPyme.WebApi/AsistenciaPyme.WebApi.csproj" Id="399ded3b-6cbd-46bc-9339-f140e966264b" />
+</Solution>
