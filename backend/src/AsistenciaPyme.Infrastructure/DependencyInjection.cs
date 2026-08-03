@@ -1,7 +1,9 @@
-﻿using AsistenciaPyme.Infrastructure.Persistence;
+﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace AsistenciaPyme.Infrastructure
 {
@@ -18,6 +20,9 @@ namespace AsistenciaPyme.Infrastructure
 
             services.AddDbContext<AsistenciaPymeDbContext>(options =>
                 options.UseNpgsql(connectionString));
+
+            services.AddScoped<IAsistenciaPymeDbContext>(
+    provider => provider.GetRequiredService<AsistenciaPymeDbContext>());
 
             return services;
         }
