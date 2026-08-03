@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AsistenciaPyme.Application.Common.Interfaces;
 
 namespace AsistenciaPyme.Infrastructure.Persistence
 {
-    public class AsistenciaPymeDbContext : DbContext
+    public class AsistenciaPymeDbContext : DbContext, IAsistenciaPymeDbContext
     {
         public AsistenciaPymeDbContext(
        DbContextOptions<AsistenciaPymeDbContext> options)
