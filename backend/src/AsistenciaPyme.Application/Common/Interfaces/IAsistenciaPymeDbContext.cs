@@ -10,6 +10,8 @@ namespace AsistenciaPyme.Application.Common.Interfaces
     {
         DbSet<Cargo> Cargos { get; }
 
+        DbSet<Empleado> Empleados { get; }
+
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
     }
