@@ -3,6 +3,7 @@ using AsistenciaPyme.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using AsistenciaPyme.Infrastructure.Security;
 
 
 namespace AsistenciaPyme.Infrastructure
@@ -23,7 +24,7 @@ namespace AsistenciaPyme.Infrastructure
 
             services.AddScoped<IAsistenciaPymeDbContext>(
     provider => provider.GetRequiredService<AsistenciaPymeDbContext>());
-
+            services.AddScoped<IPinHasher, PinHasher>();
             return services;
         }
     }
