@@ -20,6 +20,10 @@ namespace AsistenciaPyme.Application.Common.Interfaces
 
         DbSet<TipoDeduccion> TiposDeduccion { get; }
 
+        DbSet<Planilla> Planillas { get; }
+
+        DbSet<DeduccionPlanilla> DeduccionesPlanilla { get; }
+
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
     }
