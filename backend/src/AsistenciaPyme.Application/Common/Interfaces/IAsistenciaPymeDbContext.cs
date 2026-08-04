@@ -18,6 +18,8 @@ namespace AsistenciaPyme.Application.Common.Interfaces
 
         DbSet<Vacacion> Vacaciones { get; }
 
+        DbSet<TipoDeduccion> TiposDeduccion { get; }
+
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
     }
