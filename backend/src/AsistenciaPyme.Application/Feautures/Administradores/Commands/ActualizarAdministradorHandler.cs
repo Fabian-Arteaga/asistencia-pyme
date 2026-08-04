@@ -1,0 +1,127 @@
+﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Features.Administradores.DTOs;
+using AsistenciaPyme.Domain.Entities;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace AsistenciaPyme.Application.Features.Administradores.Commands;
+
+public class ActualizarAdministradorHandler
+    : IRequestHandler<
+        ActualizarAdministradorCommand,
+        AdministradorDto?>
+{
+    private readonly IAsistenciaPymeDbContext _context;
+    private readonly IContrasenaHasher _contrasenaHasher;
+
+    public ActualizarAdministradorHandler(
+        IAsistenciaPymeDbContext context,
+        IContrasenaHasher contrasenaHasher)
+    {
+        _context = context;
+        _contrasenaHasher = contrasenaHasher;
+    }
+
+    public async Task<AdministradorDto?> Handle(
+        ActualizarAdministradorCommand request,
+        CancellationToken cancellationToken)
+    {
+        Administrador? administrador =
+            await _context.Administradores
+                .FirstOrDefaultAsync(
+                    administrador =>
+                        administrador.IdAdministrador ==
+                        request.IdAdministrador,
+                    cancellationToken);
+
+        if (administrador is null)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Nombres))
+        {
+            throw new InvalidOperationException(
+                "Los nombres son obligatorios.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Apellidos))
+        {
+            throw new InvalidOperationException(
+                "Los apellidos son obligatorios.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Correo))
+        {
+            throw new InvalidOperationException(
+                "El correo es obligatorio.");
+        }
+
+        string correo =
+            request.Correo.Trim().ToLower();
+
+        bool correoDuplicado =
+            await _context.Administradores
+                .AsNoTracking()
+                .AnyAsync(
+                    otroAdministrador =>
+                        otroAdministrador.IdAdministrador !=
+                        request.IdAdministrador &&
+                        otroAdministrador.Correo.ToLower() ==
+                        correo,
+                    cancellationToken);
+
+        if (correoDuplicado)
+        {
+            throw new InvalidOperationException(
+                "Ya existe otro administrador con ese correo.");
+        }
+
+        administrador.Nombres =
+            request.Nombres.Trim();
+
+        administrador.Apellidos =
+            request.Apellidos.Trim();
+
+        administrador.Correo =
+            correo;
+
+        if (!string.IsNullOrWhiteSpace(
+                request.NuevaContrasena))
+        {
+            administrador.ContrasenaHash =
+                _contrasenaHasher.CrearHash(
+                    request.NuevaContrasena);
+        }
+
+        administrador.FechaActualizacion =
+            DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(
+            cancellationToken);
+
+        return new AdministradorDto
+        {
+            IdAdministrador =
+                administrador.IdAdministrador,
+
+            Nombres =
+                administrador.Nombres,
+
+            Apellidos =
+                administrador.Apellidos,
+
+            Correo =
+                administrador.Correo,
+
+            Activo =
+                administrador.Activo,
+
+            FechaCreacion =
+                administrador.FechaCreacion,
+
+            FechaActualizacion =
+                administrador.FechaActualizacion
+        };
+    }
+}
