@@ -25,6 +25,7 @@ namespace AsistenciaPyme.Infrastructure
             services.AddScoped<IAsistenciaPymeDbContext>(
     provider => provider.GetRequiredService<AsistenciaPymeDbContext>());
             services.AddScoped<IPinHasher, PinHasher>();
+            services.AddScoped<IContrasenaHasher, ContrasenaHasher>();
             return services;
         }
     }

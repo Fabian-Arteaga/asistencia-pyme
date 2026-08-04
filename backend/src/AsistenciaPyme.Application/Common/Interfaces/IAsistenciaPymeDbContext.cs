@@ -24,6 +24,7 @@ namespace AsistenciaPyme.Application.Common.Interfaces
 
         DbSet<DeduccionPlanilla> DeduccionesPlanilla { get; }
 
+
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
     }
