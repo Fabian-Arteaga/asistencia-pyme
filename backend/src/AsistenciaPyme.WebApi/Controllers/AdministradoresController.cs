@@ -3,6 +3,7 @@ using AsistenciaPyme.Application.Features.Administradores.DTOs;
 using AsistenciaPyme.Application.Features.Administradores.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AsistenciaPyme.WebApi.Controllers;
 
@@ -153,5 +154,49 @@ public class AdministradoresController : ControllerBase
         }
 
         return Ok(administrador);
+    }
+    [HttpPatch("me/contrasena")]
+    public async Task<IActionResult> CambiarMiContrasena(
+    [FromBody]
+    CambiarContrasenaAdministradorCommand command,
+    CancellationToken cancellationToken)
+    {
+        Claim? claimIdAdministrador =
+            User.FindFirst("idAdministrador");
+
+        if (claimIdAdministrador is null ||
+            !int.TryParse(
+                claimIdAdministrador.Value,
+                out int idAdministrador))
+        {
+            return Unauthorized(new
+            {
+                Mensaje =
+                    "No se pudo identificar al administrador autenticado."
+            });
+        }
+
+        command.IdAdministrador = idAdministrador;
+
+        bool actualizado = await _mediator.Send(
+            command,
+            cancellationToken);
+
+        if (!actualizado)
+        {
+            return Unauthorized(new
+            {
+                Mensaje =
+                    "La cuenta del administrador no está disponible."
+            });
+        }
+
+        return Ok(new
+        {
+            Mensaje =
+                "Contraseña actualizada correctamente.",
+
+            RequiereNuevoInicioSesion = true
+        });
     }
 }

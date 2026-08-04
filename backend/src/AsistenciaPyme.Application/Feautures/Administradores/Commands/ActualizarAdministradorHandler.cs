@@ -12,14 +12,11 @@ public class ActualizarAdministradorHandler
         AdministradorDto?>
 {
     private readonly IAsistenciaPymeDbContext _context;
-    private readonly IContrasenaHasher _contrasenaHasher;
 
     public ActualizarAdministradorHandler(
-        IAsistenciaPymeDbContext context,
-        IContrasenaHasher contrasenaHasher)
+        IAsistenciaPymeDbContext context)
     {
         _context = context;
-        _contrasenaHasher = contrasenaHasher;
     }
 
     public async Task<AdministradorDto?> Handle(
@@ -29,8 +26,8 @@ public class ActualizarAdministradorHandler
         Administrador? administrador =
             await _context.Administradores
                 .FirstOrDefaultAsync(
-                    administrador =>
-                        administrador.IdAdministrador ==
+                    a =>
+                        a.IdAdministrador ==
                         request.IdAdministrador,
                     cancellationToken);
 
@@ -57,18 +54,18 @@ public class ActualizarAdministradorHandler
                 "El correo es obligatorio.");
         }
 
-        string correo =
-            request.Correo.Trim().ToLower();
+        string correo = request.Correo
+            .Trim()
+            .ToLower();
 
         bool correoDuplicado =
             await _context.Administradores
                 .AsNoTracking()
                 .AnyAsync(
-                    otroAdministrador =>
-                        otroAdministrador.IdAdministrador !=
-                        request.IdAdministrador &&
-                        otroAdministrador.Correo.ToLower() ==
-                        correo,
+                    otro =>
+                        otro.IdAdministrador !=
+                            request.IdAdministrador &&
+                        otro.Correo.ToLower() == correo,
                     cancellationToken);
 
         if (correoDuplicado)
@@ -83,16 +80,7 @@ public class ActualizarAdministradorHandler
         administrador.Apellidos =
             request.Apellidos.Trim();
 
-        administrador.Correo =
-            correo;
-
-        if (!string.IsNullOrWhiteSpace(
-                request.NuevaContrasena))
-        {
-            administrador.ContrasenaHash =
-                _contrasenaHasher.CrearHash(
-                    request.NuevaContrasena);
-        }
+        administrador.Correo = correo;
 
         administrador.FechaActualizacion =
             DateTime.UtcNow;

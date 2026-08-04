@@ -55,6 +55,9 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         var claims = new List<Claim>
         {
             new Claim(
+                "idAdministrador",
+                administrador.IdAdministrador.ToString()),
+            new Claim(
                 ClaimTypes.NameIdentifier,
                 administrador.IdAdministrador.ToString()),
 
