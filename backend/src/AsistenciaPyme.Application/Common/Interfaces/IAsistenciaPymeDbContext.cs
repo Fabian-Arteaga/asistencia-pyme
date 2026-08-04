@@ -16,6 +16,8 @@ namespace AsistenciaPyme.Application.Common.Interfaces
 
         DbSet<Administrador> Administradores { get; }
 
+        DbSet<Vacacion> Vacaciones { get; }
+
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
     }
