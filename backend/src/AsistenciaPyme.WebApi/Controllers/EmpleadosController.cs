@@ -3,11 +3,12 @@ using AsistenciaPyme.Application.Features.Empleados.DTOs;
 using AsistenciaPyme.Application.Features.Empleados.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Authorization;
 namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class EmpleadosController : ControllerBase
 {
     private readonly IMediator _mediator;
