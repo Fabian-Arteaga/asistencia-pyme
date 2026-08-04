@@ -13,40 +13,40 @@
 
 El presente documento describe el diseño técnico del sistema **AsistenciaPyme**.
 
-Se presentan las tecnologías, la arquitectura, la estructura del proyecto, la base de datos y las interfaces principales que se utilizarán para desarrollar la aplicación.
+Se presentan las tecnologías, la arquitectura, la estructura del proyecto, el diseño de la base de datos y las interfaces principales del sistema.
 
 ---
 
 # 2. Stack tecnológico
 
-| Área                 | Tecnología            | Uso                              |
-| -------------------- | --------------------- | -------------------------------- |
-| Lenguaje             | C#                    | Desarrollo del backend           |
-| Backend              | ASP.NET Core Web API  | Creación de la API REST          |
-| ORM                  | Entity Framework Core | Acceso a los datos               |
-| Proveedor            | Npgsql                | Conexión entre .NET y PostgreSQL |
-| Base de datos        | PostgreSQL            | Almacenamiento de información    |
-| Autenticación        | JWT                   | Gestión de usuarios y acceso     |
-| Frontend             | Pendiente de definir  | Desarrollo de la interfaz web    |
-| Documentación API    | Swagger               | Documentación y prueba de la API |
-| Control de versiones | Git y GitHub          | Gestión del código fuente        |
-| Documentación        | Obsidian y Markdown   | Documentación del proyecto       |
-| Diagramación         | Excalidraw y Mermaid  | Creación de diagramas            |
+| Área                 | Tecnología                                   | Uso                            |
+| -------------------- | -------------------------------------------- | ------------------------------ |
+| Lenguaje             | C#                                           | Desarrollo del backend         |
+| Backend              | ASP.NET Core Web API                         | API REST                       |
+| ORM                  | Entity Framework Core                        | Acceso a datos                 |
+| Base de datos        | PostgreSQL                                   | Almacenamiento de información  |
+| Proveedor            | Npgsql                                       | Conexión con PostgreSQL        |
+| Autenticación        | Autenticación personalizada con PBKDF2 + JWT | Acceso al panel administrativo |
+| Frontend             | Html,Css y JavaScript                        | Interfaz web                   |
+| Documentación API    | Swagger                                      | Pruebas de la API              |
+| Control de versiones | Git y GitHub                                 | Gestión del código             |
+| Documentación        | Markdown y Obsidian                          | Documentación del proyecto     |
+| Diagramación         | Excalidraw y Mermaid                         | Diagramas                      |
 
 ---
 
 # 3. Arquitectura del software
 
-El backend utilizará **Clean Architecture** para separar las responsabilidades del sistema.
+El backend utiliza **Clean Architecture** para separar las responsabilidades del sistema.
 
-También aplicará el patrón **CQRS**, separando las operaciones que modifican información de las operaciones de consulta.
+También aplica el patrón **CQRS**, separando las operaciones que modifican información de las operaciones de consulta.
 
 ## 3.1 Capas de la solución
 
-- **Domain:** entidades, interfaces y reglas del negocio.
-- **Application:** Commands, Queries, Handlers, DTOs y validaciones.
-- **Infrastructure:** Entity Framework Core, repositorios, Identity y PostgreSQL.
-- **WebApi:** Controllers, Middlewares, JWT, Swagger y configuración de la API.
+- **Domain:** Entidades, enumeraciones y reglas del negocio.
+- **Application:** Commands, Queries, Handlers, DTOs e interfaces.
+- **Infrastructure:** Entity Framework Core, PostgreSQL, persistencia y servicios de seguridad.
+- **WebApi:** Controllers, autenticación JWT, middlewares y configuración de la API.
 
 ## 3.2 Diagrama de arquitectura
 
@@ -55,45 +55,43 @@ flowchart TB
 
     Client["👤 Cliente / Navegador"]
 
-    subgraph Presentation[" Presentation Layer"]
+    subgraph Presentation["Presentation Layer"]
         API["ASP.NET Core Web API"]
         Controllers["Controllers"]
-        JWT["JWT Authentication"]
+        JWT["Autenticación JWT"]
         Middleware["Middlewares"]
         Swagger["Swagger"]
     end
 
-    subgraph Application[" Application Layer"]
+    subgraph Application["Application Layer"]
         Commands["Commands"]
         Queries["Queries"]
         Handlers["Handlers"]
         DTOs["DTOs"]
-        Validators["Validators"]
-        Behaviors["Pipeline Behaviors"]
-    end
-
-    subgraph Domain[" Domain Layer"]
-        Entities["Entities"]
         Interfaces["Interfaces"]
-        ValueObjects["Value Objects"]
-        Enums["Enums"]
-        Events["Domain Events"]
     end
 
-    subgraph Infrastructure["🗄 Infrastructure Layer"]
-        Repositories["Repositories"]
+    subgraph Domain["Domain Layer"]
+        Entities["Entities"]
+        Enums["Enums"]
+        BusinessRules["Reglas del negocio"]
+    end
+
+    subgraph Infrastructure["Infrastructure Layer"]
         DbContext["DbContext"]
         EF["Entity Framework Core"]
-        Identity["ASP.NET Identity"]
-        Services["External Services"]
+        Security["Servicios de seguridad"]
+        Npgsql["Npgsql"]
     end
 
-    Database[(" PostgreSQL")]
+    Database[("PostgreSQL")]
 
     Client --> API
-    API --> Application
+    API --> Controllers
+    Controllers --> Application
     Application --> Domain
     Infrastructure -. Implementa .-> Interfaces
+    Infrastructure --> Domain
     Infrastructure --> Database
 ```
 
@@ -101,107 +99,263 @@ flowchart TB
 
 # 4. Estructura del proyecto
 
-El código fuente estará organizado dentro de la carpeta `src`.
+El proyecto está organizado como un monorepositorio con las carpetas `backend`, `frontend` y `docs`.
 
 ```text
 AsistenciaPyme/
-├── docs/
-│   ├── documento-requisitos.md
-│   ├── documento-diseno.md
-│   
+├── backend/
+│   ├── AsistenciaPyme.slnx
+│   └── src/
+│       ├── AsistenciaPyme.Domain/
+│       ├── AsistenciaPyme.Application/
+│       ├── AsistenciaPyme.Infrastructure/
+│       └── AsistenciaPyme.WebApi/
 │
-└── src/
-    ├── AsistenciaPyme.Domain/
-    ├── AsistenciaPyme.Application/
-    ├── AsistenciaPyme.Infrastructure/
-    └── AsistenciaPyme.WebApi/
+├── frontend/
+│
+└── docs/
+    ├── documento-requisitos.md
+    └── documento-diseno.md
 ```
 
 | Proyecto | Responsabilidad |
-|---|---|
+|----------|-----------------|
 | Domain | Entidades y reglas del negocio |
 | Application | Casos de uso y CQRS |
-| Infrastructure | Persistencia y servicios técnicos |
-| WebApi | Endpoints y configuración de la API |
+| Infrastructure | Persistencia y servicios de seguridad |
+| WebApi | API REST y configuración |
 
-La capa `Application` organizará los casos de uso por módulos:
+La capa **Application** organiza los casos de uso por módulos.
 
 ```text
 Features/
-├── Auth/
+├── Administradores/
+├── Autenticacion/
+├── Cargos/
 ├── Empleados/
-├── Asistencia/
+├── Asistencias/
 ├── Vacaciones/
-├── Planillas/
-└── Reportes/
+├── TiposDeduccion/
+└── Planillas/
 ```
 
-Cada módulo podrá contener:
+Cada módulo puede contener:
 
 ```text
 Empleados/
 ├── Commands/
 ├── Queries/
-├── DTOs/
-└── Validators/
+└── DTOs/
 ```
 
 ---
 
 # 5. Diseño de la base de datos
 
-La información será almacenada en una base de datos relacional **PostgreSQL**.
+La información será almacenada en una base de datos relacional PostgreSQL.
 
 ## 5.1 Entidades principales
 
-| Entidad | Descripción |
-|---|---|
-| Usuario | Datos de acceso, rol y estado |
-| Empleado | Información personal y laboral |
-| Cargo | Cargo, funciones y responsabilidades |
-| Asistencia | Registros de entrada y salida |
-| Vacación | Solicitudes y estado de vacaciones |
-| Planilla | Información salarial por periodo |
-| Deducción | Descuentos aplicados a la planilla |
+| Entidad           | Descripción                                   |
+| ----------------- | --------------------------------------------- |
+| Administrador     | Usuario con acceso al panel administrativo.   |
+| Empleado          | Información personal, laboral, código y PIN.  |
+| Cargo             | Cargo, funciones y responsabilidades.         |
+| Asistencia        | Registros de entrada y salida.                |
+| Vacación          | Vacaciones registradas para el empleado.      |
+| Planilla          | Información salarial por período.             |
+| TipoDeduccion     | Catálogo de tipos de deducciones disponibles. |
+| DeduccionPlanilla | Deducciones aplicadas a una planilla.         |
 
 ## 5.2 Relaciones principales
 
-- Un usuario podrá estar asociado con un empleado.
-- Un cargo podrá estar asignado a varios empleados.
-- Un empleado podrá tener varias asistencias.
-- Un empleado podrá solicitar varias vacaciones.
-- Un empleado podrá tener varias planillas.
-- Una planilla podrá contener varias deducciones.
+- Un cargo puede estar asignado a varios empleados.
+- Un empleado puede registrar múltiples asistencias.
+- Un empleado puede tener varios registros de vacaciones.
+- Un empleado puede tener varias planillas.
+- Una planilla puede contener varias deducciones.
+- Un tipo de deducción puede aplicarse en diferentes planillas.
 
 ## 5.3 Diagrama entidad-relación
 
-> El diagrama entidad-relación se elaborará después de definir los atributos y relaciones definitivas de las tablas.
+# Diagrama entidad-relación — AsistenciaPyme
+
+```mermaid
+erDiagram
+
+    ADMINISTRADOR {
+        int IdAdministrador PK
+        varchar Nombres
+        varchar Apellidos
+        varchar Correo UK
+        text ContrasenaHash
+        boolean Activo
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    CARGO {
+        int IdCargo PK
+        varchar Nombre UK
+        varchar Descripcion
+        text Funciones
+        text Responsabilidades
+        boolean Activo
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    EMPLEADO {
+        int IdEmpleado PK
+        int IdCargo FK
+        varchar CodigoEmpleado UK
+        text PinHash
+        varchar Identificacion UK
+        varchar Nombres
+        varchar Apellidos
+        varchar Telefono
+        varchar Correo
+        varchar Direccion
+        date FechaContratacion
+        decimal SalarioBase
+        enum Estado
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    ASISTENCIA {
+        int IdAsistencia PK
+        int IdEmpleado FK
+        int IdAdministrador FK
+        datetime HoraEntrada
+        datetime HoraSalida
+        varchar Observacion
+        boolean Corregida
+        varchar MotivoCorreccion
+        datetime FechaCorreccion
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    VACACION {
+        int IdVacacion PK
+        int IdEmpleado FK
+        int IdAdministrador FK
+        date FechaInicio
+        date FechaFin
+        varchar Motivo
+        varchar Observacion
+        boolean Cancelada
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    TIPO_DEDUCCION {
+        int IdTipoDeduccion PK
+        varchar Nombre UK
+        varchar Descripcion
+        enum TipoCalculo
+        decimal ValorPredeterminado
+        boolean Activo
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    PLANILLA {
+        int IdPlanilla PK
+        int IdEmpleado FK
+        int IdAdministrador FK
+        date FechaInicioPeriodo
+        date FechaFinPeriodo
+        decimal SalarioBasePeriodo
+        decimal IngresosAdicionales
+        decimal TotalDeducciones
+        decimal SalarioNeto
+        enum Estado
+        datetime FechaCreacion
+        datetime FechaActualizacion
+    }
+
+    DEDUCCION_PLANILLA {
+        int IdDeduccionPlanilla PK
+        int IdPlanilla FK
+        int IdTipoDeduccion FK
+        decimal ValorAplicado
+        decimal MontoCalculado
+        varchar Observacion
+        datetime FechaCreacion
+    }
+
+    CARGO ||--o{ EMPLEADO : "se asigna a"
+
+    EMPLEADO ||--o{ ASISTENCIA : "registra"
+    ADMINISTRADOR o|--o{ ASISTENCIA : "registra manualmente"
+
+    EMPLEADO ||--o{ VACACION : "posee"
+    ADMINISTRADOR ||--o{ VACACION : "registra"
+
+    EMPLEADO ||--o{ PLANILLA : "recibe"
+    ADMINISTRADOR ||--o{ PLANILLA : "genera"
+
+    PLANILLA ||--o{ DEDUCCION_PLANILLA : "contiene"
+    TIPO_DEDUCCION ||--o{ DEDUCCION_PLANILLA : "se aplica como"
+```
 
 ---
 
 # 6. Diseño de interfaces
 
-El sistema mostrará diferentes pantallas según el rol del usuario.
+El sistema contará con dos interfaces principales.
 
-## 6.1 Pantallas generales
+## 6.1 Módulo de marcaje
+
+Pantalla utilizada por los empleados desde un dispositivo fijo ubicado en la empresa.
+
+Permitirá:
+
+- Ingresar código de empleado.
+- Ingresar PIN.
+- Registrar asistencia.
+- Mostrar la confirmación del marcaje.
+
+El sistema determinará automáticamente si corresponde registrar una entrada o una salida.
+
+### Flujo de funcionamiento
+
+1. El empleado ingresa su código.
+2. El empleado ingresa su PIN.
+3. El sistema valida las credenciales.
+4. Si no existe una asistencia abierta, registra la hora de entrada.
+5. Si existe una asistencia abierta, registra la hora de salida.
+6. El sistema muestra una confirmación del registro.
+
+---
+
+## 6.2 Panel administrativo
+
+Disponible únicamente para el administrador autenticado.
+
+Contará con las siguientes pantallas:
 
 - Inicio de sesión.
 - Dashboard.
-- Perfil.
-- Cambio de contraseña.
-
-## 6.2 Pantallas del administrador
-
+- Gestión de cargos.
 - Gestión de empleados.
-- Consulta y corrección de asistencias.
+- Gestión de asistencias.
 - Gestión de vacaciones.
-- Gestión de planillas y deducciones.
-- Visualización de reportes.
+- Gestión de tipos de deducción.
+- Gestión de planillas.
 
-## 6.3 Pantallas del empleado
+### Funcionalidades principales
 
-- Registro de entrada y salida.
-- Historial de asistencia.
-- Solicitud de vacaciones.
-- Consulta de planillas y deducciones.
-- Perfil.
+Desde el panel administrativo será posible:
+
+- Administrar cargos.
+- Administrar empleados.
+- Consultar asistencias registradas.
+- Registrar asistencias manualmente cuando sea necesario.
+- Administrar vacaciones.
+- Administrar tipos de deducción.
+- Generar y consultar planillas.
+- Cambiar la contraseña del administrador.
+- Cambiar el PIN de los empleados.
