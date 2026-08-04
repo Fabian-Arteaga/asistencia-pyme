@@ -1,32 +1,53 @@
 ﻿using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Infrastructure.Persistence;
+using AsistenciaPyme.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AsistenciaPyme.Infrastructure.Security;
 
+namespace AsistenciaPyme.Infrastructure;
 
-namespace AsistenciaPyme.Infrastructure
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        public static IServiceCollection AddInfrastructure(
-      this IServiceCollection services,
-      IConfiguration configuration)
+        string? connectionString =
+            configuration.GetConnectionString(
+                "AsistenciaPymeDatabase");
+
+        if (string.IsNullOrWhiteSpace(
+                connectionString))
         {
-            string connectionString =
-                configuration.GetConnectionString("AsistenciaPymeDatabase")
-                ?? throw new InvalidOperationException(
-                    "No se encontró la cadena de conexión AsistenciaPymeDatabase.");
-
-            services.AddDbContext<AsistenciaPymeDbContext>(options =>
-                options.UseNpgsql(connectionString));
-
-            services.AddScoped<IAsistenciaPymeDbContext>(
-    provider => provider.GetRequiredService<AsistenciaPymeDbContext>());
-            services.AddScoped<IPinHasher, PinHasher>();
-            services.AddScoped<IContrasenaHasher, ContrasenaHasher>();
-            return services;
+            throw new InvalidOperationException(
+                "No se encontró la cadena de conexión AsistenciaPymeDatabase.");
         }
+
+        services.AddDbContext<
+            AsistenciaPymeDbContext>(
+            options =>
+                options.UseNpgsql(
+                    connectionString));
+
+        services.AddScoped<
+            IAsistenciaPymeDbContext>(
+            provider =>
+                provider.GetRequiredService<
+                    AsistenciaPymeDbContext>());
+
+        services.AddScoped<
+            IPinHasher,
+            PinHasher>();
+
+        services.AddScoped<
+            IContrasenaHasher,
+            ContrasenaHasher>();
+
+        services.AddScoped<
+            IJwtTokenGenerator,
+            JwtTokenGenerator>();
+
+        return services;
     }
 }
