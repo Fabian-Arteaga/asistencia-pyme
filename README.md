@@ -1,89 +1,131 @@
-# 🚀 Asistencia Pyme
+# AsistenciaPyme
 
-Aplicación web desarrollada para facilitar la gestión del personal en una MIPYME, permitiendo administrar empleados, controlar la asistencia, gestionar vacaciones y calcular planillas de manera sencilla y centralizada.
-
----
-
-## 📌 Objetivo
-
-Desarrollar una solución que ayude a pequeñas empresas a digitalizar el control de su personal mediante una plataforma web segura, organizada y fácil de utilizar.
+Aplicación web desarrollada para facilitar la administración del personal en una MIPYME, permitiendo gestionar empleados, controlar la asistencia, administrar vacaciones y generar planillas de forma sencilla y centralizada.
 
 ---
 
-## ✨ Funcionalidades
+# Descripción
 
-- Inicio de sesión con control de acceso por roles.
+AsistenciaPyme es un sistema web orientado a pequeñas empresas que necesitan registrar la asistencia de sus empleados desde un dispositivo fijo y administrar la información del personal desde un panel administrativo.
+
+El sistema implementa una API REST desarrollada con ASP.NET Core Web API y una arquitectura basada en Clean Architecture y CQRS.
+
+---
+
+# Funcionalidades
+
+- Autenticación de administradores mediante JWT.
+- Gestión de administradores.
+- Gestión de cargos.
 - Gestión de empleados.
-- Registro de asistencia.
-- Administración de vacaciones.
-- Cálculo de planillas y deducciones.
-- Consulta de reportes.
-- Administración del perfil del usuario.
+- Registro de asistencia mediante código y PIN.
+- Consulta de asistencias.
+- Gestión de vacaciones.
+- Gestión de tipos de deducción.
+- Generación de planillas.
 
 ---
 
-## 🏗️ Arquitectura
+# Arquitectura
 
-El backend está diseñado siguiendo los principios de **Clean Architecture** y el patrón **CQRS**, permitiendo mantener una separación clara entre la lógica del negocio, la infraestructura y la capa de presentación.
+El backend está desarrollado utilizando:
+
+- Clean Architecture
+- CQRS
+- API REST
+
+Esta estructura permite mantener una separación clara entre la lógica del negocio, el acceso a datos y la presentación.
 
 ---
 
-## 💻 Tecnologías
+# Tecnologías
 
-### Backend
+## Backend
 
 - C#
 - ASP.NET Core Web API
 - Entity Framework Core
 - PostgreSQL
-- ASP.NET Core Identity
+- Npgsql
 - JWT
+  
 
-### Frontend
+## Frontend
 
-> En proceso de definición.
+- HTML
+- CSS
+- JavaScript
 
-### Herramientas
+## Herramientas
 
 - Visual Studio
 - Visual Studio Code
-- Git & GitHub
+- Git
+- GitHub
+- Swagger
 - Obsidian
-- Excalidraw
-- Mermaid
 
 ---
 
-## 📁 Estructura del proyecto
+# Estructura del proyecto
 
 ```text
-AsistenciaPyme
+AsistenciaPyme/
 │
 ├── backend/
+│   ├── src/
+│   └── AsistenciaPyme.slnx
+│
 ├── frontend/
+│
 ├── docs/
+│
 └── README.md
 ```
 
 ---
 
-## 📚 Documentación
+# Requisitos
 
-Toda la documentación del proyecto se encuentra en la carpeta `docs`.
-
-- Documento de requisitos.
-- Documento de diseño.
-
----
-
-## 📈 Estado del proyecto
-
-Actualmente el proyecto se encuentra en la fase de análisis, diseño e implementación del backend.
+- .NET 10 SDK
+- PostgreSQL
+- Visual Studio 2022 o superior
+- Git
 
 ---
 
-## 👨‍💻 Autor
+# Instalación
 
-**Fabián Arteaga**
+## Clonar el repositorio
+
+```bash
+git clone https://github.com/Fabian-Arteaga/asistencia-pyme.git
+
+cd asistencia-pyme
+```
+
+## Configurar la base de datos
+
+Crear una base de datos PostgreSQL y actualizar la cadena de conexión en:
+
+```text
+backend/src/AsistenciaPyme.WebApi/appsettings.json
+```
+
+## Aplicar las migraciones
+
+Desde la carpeta `backend`:
+
+```bash
+dotnet ef database update \
+--project src/AsistenciaPyme.Infrastructure \
+--startup-project src/AsistenciaPyme.WebApi
+```
+
+## Ejecutar la API
+
+```bash
+dotnet run --project src/AsistenciaPyme.WebApi
+```
 
 Proyecto desarrollado para la asignatura **Proyecto de TI II**.
