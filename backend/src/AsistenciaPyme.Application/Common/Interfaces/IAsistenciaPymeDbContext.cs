@@ -12,6 +12,10 @@ namespace AsistenciaPyme.Application.Common.Interfaces
 
         DbSet<Empleado> Empleados { get; }
 
+        DbSet<Asistencia> Asistencias { get; }
+
+        DbSet<Administrador> Administradores { get; }
+
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
     }
