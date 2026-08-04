@@ -18,6 +18,4 @@ public class ActualizarAdministradorCommand
 
     public string Correo { get; set; } =
         string.Empty;
-
-    public string? NuevaContrasena { get; set; }
 }

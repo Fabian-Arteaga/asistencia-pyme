@@ -139,4 +139,39 @@ public class EmpleadosController : ControllerBase
 
         return Ok(empleado);
     }
+    [HttpPatch("{idEmpleado:int}/pin")]
+    public async Task<IActionResult> CambiarPin(
+    int idEmpleado,
+    [FromBody] CambiarPinEmpleadoCommand command,
+    CancellationToken cancellationToken)
+    {
+        if (idEmpleado <= 0)
+        {
+            return BadRequest(new
+            {
+                Mensaje =
+                    "El identificador del empleado debe ser mayor que cero."
+            });
+        }
+
+        command.IdEmpleado = idEmpleado;
+
+        bool actualizado = await _mediator.Send(
+            command,
+            cancellationToken);
+
+        if (!actualizado)
+        {
+            return NotFound(new
+            {
+                Mensaje =
+                    $"No se encontró el empleado con ID {idEmpleado}."
+            });
+        }
+
+        return Ok(new
+        {
+            Mensaje = "PIN actualizado correctamente."
+        });
+    }
 }
