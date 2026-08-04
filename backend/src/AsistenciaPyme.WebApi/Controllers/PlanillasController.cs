@@ -2,12 +2,14 @@
 using AsistenciaPyme.Application.Features.Planillas.DTOs;
 using AsistenciaPyme.Application.Features.Planillas.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class PlanillasController : ControllerBase
 {
     private readonly IMediator _mediator;

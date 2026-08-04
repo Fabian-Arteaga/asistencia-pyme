@@ -2,12 +2,14 @@
 using AsistenciaPyme.Application.Features.TiposDeduccion.DTOs;
 using AsistenciaPyme.Application.Features.TiposDeduccion.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/tipos-deduccion")]
+[Authorize(Roles = "Administrador")]
 public class TiposDeduccionController : ControllerBase
 {
     private readonly IMediator _mediator;

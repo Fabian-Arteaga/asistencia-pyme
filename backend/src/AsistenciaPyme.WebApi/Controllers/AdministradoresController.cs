@@ -2,6 +2,7 @@
 using AsistenciaPyme.Application.Features.Administradores.DTOs;
 using AsistenciaPyme.Application.Features.Administradores.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,6 +10,7 @@ namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class AdministradoresController : ControllerBase
 {
     private readonly IMediator _mediator;
