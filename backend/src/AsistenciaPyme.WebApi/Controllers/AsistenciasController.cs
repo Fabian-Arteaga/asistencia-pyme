@@ -3,12 +3,14 @@ using AsistenciaPyme.Application.Features.Asistencias.DTOs;
 using AsistenciaPyme.Application.Features.Asistencias.Queries;
 using AsistenciaPyme.Application.Feautures.Asistencias.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class AsistenciasController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -17,7 +19,7 @@ public class AsistenciasController : ControllerBase
     {
         _mediator = mediator;
     }
-
+    [AllowAnonymous]
     [HttpPost("marcar")]
     public async Task<ActionResult<ResultadoMarcacionDto>> Marcar(
         [FromBody] MarcarAsistenciaCommand command,

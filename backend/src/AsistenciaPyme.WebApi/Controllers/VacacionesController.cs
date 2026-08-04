@@ -2,12 +2,14 @@
 using AsistenciaPyme.Application.Features.Vacaciones.DTOs;
 using AsistenciaPyme.Application.Features.Vacaciones.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class VacacionesController : ControllerBase
 {
     private readonly IMediator _mediator;

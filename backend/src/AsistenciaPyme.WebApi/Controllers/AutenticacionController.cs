@@ -10,6 +10,7 @@ namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/autenticacion")]
+[AllowAnonymous]
 public class AutenticacionController
     : ControllerBase
 {

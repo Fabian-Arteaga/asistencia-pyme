@@ -4,12 +4,14 @@ using AsistenciaPyme.Application.Feautures.Cargos.Commands;
 using AsistenciaPyme.Application.Feautures.Cargos.DTOs;
 using AsistenciaPyme.Application.Feautures.Cargos.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AsistenciaPyme.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Administrador")]
 public class CargosController : ControllerBase
 {
     private readonly IMediator _mediator;
