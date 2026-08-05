@@ -99,8 +99,9 @@ flowchart TB
 
 # 4. Estructura del proyecto
 
-El proyecto está organizado como un monorepositorio con las carpetas `backend`, `frontend` y `docs`.
-
+El proyecto está organizado como un monorepositorio con las carpetas
+`backend`, `frontend` y `docs`.
+```text
 AsistenciaPyme/
 ├── backend/
 │   ├── AsistenciaPyme.slnx
