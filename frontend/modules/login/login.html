@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Acceso administrativo</title>
+
+    <link rel="stylesheet" href="./login.css" />
+  </head>
+
+  <body>
+    <header class="encabezado">
+      <div class="encabezado__contenido">
+        <h1>AsistenciaPyme</h1>
+
+        <a href="../../index.html" class="enlace-regresar">
+          Volver al marcaje
+        </a>
+      </div>
+    </header>
+
+    <main class="contenedor">
+      <section class="tarjeta-login">
+        <div class="tarjeta-login__encabezado">
+          <h2>Acceso administrativo</h2>
+
+          <p>Ingrese sus credenciales para continuar.</p>
+        </div>
+
+        <form id="formLogin" autocomplete="on" novalidate>
+          <div class="campo">
+            <label for="correo"> Correo electrónico </label>
+
+            <input
+              type="email"
+              id="correo"
+              name="correo"
+              maxlength="150"
+              placeholder="admin@asistenciapyme.com"
+              autocomplete="off"
+              spellcheck="false"
+              required
+            />
+          </div>
+
+          <div class="campo">
+            <label for="contrasena"> Contraseña </label>
+
+            <input
+              type="password"
+              id="contrasena"
+              name="contrasena"
+              maxlength="200"
+              placeholder="Ingrese su contraseña"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <button type="submit" id="btnIniciarSesion" class="boton-principal">
+            Iniciar sesión
+          </button>
+        </form>
+
+        <div
+          id="mensajeLogin"
+          class="mensaje mensaje--oculto"
+          role="alert"
+          aria-live="polite"
+        ></div>
+      </section>
+    </main>
+
+    <footer class="pie-pagina">
+      <p>Panel administrativo de AsistenciaPyme</p>
+    </footer>
+
+    <script type="module" src="./login.js"></script>
+  </body>
+</html>
