@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Dashboard</title>
+
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+
+    <link rel="stylesheet" href="./dashboard.css" />
+  </head>
+
+  <body>
+    <!-- El sidebar se carga desde layout.js -->
+    <div id="sidebarContainer"></div>
+
+    <!-- El topbar se carga desde layout.js -->
+    <div id="topbarContainer"></div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-dashboard">
+          <h2>Panel administrativo</h2>
+
+          <p>Bienvenido al sistema de asistencia.</p>
+        </section>
+
+        <section class="resumen-dashboard">
+          <article class="tarjeta-resumen">
+            <span class="tarjeta-resumen__titulo"> Empleados </span>
+
+            <strong id="totalEmpleados" class="tarjeta-resumen__cantidad">
+              --
+            </strong>
+
+            <small> Empleados registrados </small>
+          </article>
+
+          <article class="tarjeta-resumen">
+            <span class="tarjeta-resumen__titulo"> Asistencias </span>
+
+            <strong id="totalAsistencias" class="tarjeta-resumen__cantidad">
+              --
+            </strong>
+
+            <small> Marcaciones registradas </small>
+          </article>
+
+          <article class="tarjeta-resumen">
+            <span class="tarjeta-resumen__titulo"> Vacaciones </span>
+
+            <strong id="totalVacaciones" class="tarjeta-resumen__cantidad">
+              --
+            </strong>
+
+            <small> Solicitudes registradas </small>
+          </article>
+
+          <article class="tarjeta-resumen">
+            <span class="tarjeta-resumen__titulo"> Planillas </span>
+
+            <strong id="totalPlanillas" class="tarjeta-resumen__cantidad">
+              --
+            </strong>
+
+            <small> Planillas registradas </small>
+          </article>
+        </section>
+
+        <div
+          id="mensajeDashboard"
+          class="mensaje-dashboard mensaje-dashboard--oculto"
+          role="alert"
+        ></div>
+      </div>
+    </main>
+
+    <script type="module" src="./dashboard.js"></script>
+  </body>
+</html>
