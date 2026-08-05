@@ -66,7 +66,6 @@ function renderizarSidebar() {
                     href="../empleados/empleados.html"
                     class="menu-link"
                     data-menu="empleados"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         E

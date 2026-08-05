@@ -1,8 +1,5 @@
 const API_URL = "https://localhost:7214/api";
 
-/**
- * Envía las credenciales del administrador al backend.
- */
 export async function iniciarSesion(correo, contrasena) {
     const response = await fetch(
         `${API_URL}/autenticacion/login`,

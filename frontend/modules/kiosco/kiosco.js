@@ -2,7 +2,7 @@ import {
     marcarAsistencia
 } from "./kiosco.service.js";
 
-const DURACION_POPUP = 4000;
+const DURACION_POPUP = 1000;
 
 const formMarcaje =
     document.getElementById("formMarcaje");
