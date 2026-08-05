@@ -95,7 +95,8 @@
                 <tr>
                   <th>Nombre</th>
                   <th>Descripción</th>
-                  <th>Porcentaje</th>
+                  <th>Tipo de cálculo</th>
+                  <th>Valor predeterminado</th>
                   <th>Estado</th>
 
                   <th class="columna-acciones">Acciones</th>
@@ -113,7 +114,7 @@
       </div>
     </main>
 
-    <!-- Modal para crear y editar -->
+    <!-- Modal para crear y editar tipos de deducción -->
     <div id="modalDeduccion" class="modal modal--oculto" aria-hidden="true">
       <div id="fondoModalDeduccion" class="modal__fondo"></div>
 
@@ -147,28 +148,43 @@
               id="nombreDeduccion"
               maxlength="100"
               placeholder="Ejemplo: INSS laboral"
+              autocomplete="off"
               required
             />
           </div>
 
           <div class="campo-formulario">
-            <label for="porcentajeDeduccion"> Porcentaje </label>
+            <label for="tipoCalculoDeduccion"> Tipo de cálculo </label>
 
-            <div class="campo-porcentaje">
-              <input
-                type="number"
-                id="porcentajeDeduccion"
-                min="0"
-                max="100"
-                step="0.01"
-                placeholder="0.00"
-                required
-              />
+            <select id="tipoCalculoDeduccion" required>
+              <option value="">Seleccione un tipo</option>
 
-              <span>%</span>
-            </div>
+              <option value="1">Porcentaje</option>
 
-            <small> Ingrese un valor entre 0 y 100. </small>
+              <option value="2">Monto fijo</option>
+            </select>
+
+            <small> Seleccione cómo se calculará la deducción. </small>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="valorPredeterminadoDeduccion">
+              Valor predeterminado
+            </label>
+
+            <input
+              type="number"
+              id="valorPredeterminadoDeduccion"
+              min="0"
+              max="999999999.99"
+              step="0.01"
+              placeholder="0.00"
+              required
+            />
+
+            <small id="ayudaValorPredeterminado">
+              Seleccione primero el tipo de cálculo.
+            </small>
           </div>
 
           <div class="campo-formulario">
@@ -188,6 +204,7 @@
             id="mensajeFormulario"
             class="mensaje mensaje--oculto mensaje--modal"
             role="alert"
+            aria-live="polite"
           ></div>
 
           <div class="modal__acciones">

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Planillas</title>
+
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+
+    <link rel="stylesheet" href="./planillas.css" />
+  </head>
+
+  <body>
+    <div id="sidebarContainer"></div>
+    <div id="topbarContainer"></div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Gestión de planillas</h2>
+
+            <p>Genere y consulte las planillas de los empleados.</p>
+          </div>
+
+          <button
+            type="button"
+            id="btnNuevaPlanilla"
+            class="boton boton--primario"
+          >
+            Generar planilla
+          </button>
+        </section>
+
+        <section class="panel-planillas">
+          <div class="filtros">
+            <div class="campo-filtro campo-filtro--empleado">
+              <label for="filtroEmpleado"> Empleado </label>
+
+              <select id="filtroEmpleado">
+                <option value="">Todos los empleados</option>
+              </select>
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroDesde"> Desde </label>
+
+              <input type="date" id="filtroDesde" />
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroHasta"> Hasta </label>
+
+              <input type="date" id="filtroHasta" />
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroEstado"> Estado </label>
+
+              <select id="filtroEstado">
+                <option value="">Todos</option>
+
+                <option value="1">Generada</option>
+
+                <option value="2">Pagada</option>
+
+                <option value="3">Anulada</option>
+              </select>
+            </div>
+
+            <div class="filtros__acciones">
+              <button
+                type="button"
+                id="btnLimpiarFiltros"
+                class="boton boton--secundario"
+              >
+                Limpiar
+              </button>
+
+              <button
+                type="button"
+                id="btnActualizar"
+                class="boton boton--secundario"
+              >
+                Actualizar
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="mensajePlanillas"
+            class="mensaje mensaje--oculto"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <div class="resumen-listado">
+            <span id="contadorPlanillas"> 0 planillas </span>
+
+            <strong id="totalNetoVisible"> Total neto: C$ 0.00 </strong>
+          </div>
+
+          <div id="estadoCarga" class="estado-tabla">Cargando planillas...</div>
+
+          <div
+            id="contenedorTabla"
+            class="tabla-contenedor tabla-contenedor--oculto"
+          >
+            <table class="tabla-planillas">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Período</th>
+                  <th>Salario base</th>
+                  <th>Ingresos adicionales</th>
+                  <th>Deducciones</th>
+                  <th>Salario neto</th>
+                  <th>Estado</th>
+
+                  <th class="columna-acciones">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody id="tablaPlanillasBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">
+            No se encontraron planillas.
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal para generar planilla -->
+    <div id="modalPlanilla" class="modal modal--oculto" aria-hidden="true">
+      <div id="fondoModalPlanilla" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido modal__contenido--grande"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalPlanilla"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalPlanilla">Generar planilla</h3>
+
+          <button
+            type="button"
+            id="btnCerrarModalPlanilla"
+            class="modal__cerrar"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="formPlanilla" autocomplete="off" novalidate>
+          <section class="seccion-formulario">
+            <h4>Información del período</h4>
+
+            <div class="formulario-grid formulario-grid--tres">
+              <div class="campo-formulario">
+                <label for="empleadoPlanilla"> Empleado </label>
+
+                <select id="empleadoPlanilla" required>
+                  <option value="">Seleccione un empleado</option>
+                </select>
+              </div>
+
+              <div class="campo-formulario">
+                <label for="fechaInicioPeriodo"> Fecha inicial </label>
+
+                <input type="date" id="fechaInicioPeriodo" required />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="fechaFinPeriodo"> Fecha final </label>
+
+                <input type="date" id="fechaFinPeriodo" required />
+              </div>
+            </div>
+
+            <div class="formulario-grid">
+              <div class="campo-formulario">
+                <label for="salarioBaseEmpleado">
+                  Salario base registrado
+                </label>
+
+                <input
+                  type="text"
+                  id="salarioBaseEmpleado"
+                  value="C$ 0.00"
+                  disabled
+                />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="ingresosAdicionales"> Ingresos adicionales </label>
+
+                <input
+                  type="number"
+                  id="ingresosAdicionales"
+                  min="0"
+                  max="999999999.99"
+                  step="0.01"
+                  value="0"
+                  required
+                />
+              </div>
+            </div>
+          </section>
+
+          <section class="seccion-formulario">
+            <div class="titulo-seccion-acciones">
+              <div>
+                <h4>Deducciones</h4>
+
+                <p>Puede aplicar deducciones por porcentaje o monto fijo.</p>
+              </div>
+
+              <button
+                type="button"
+                id="btnAgregarDeduccion"
+                class="boton boton--secundario"
+              >
+                Agregar deducción
+              </button>
+            </div>
+
+            <div id="sinDeducciones" class="sin-deducciones">
+              No se han agregado deducciones.
+            </div>
+
+            <div id="listaDeducciones" class="lista-deducciones"></div>
+          </section>
+
+          <section class="resumen-calculo">
+            <h4>Resumen de cálculo</h4>
+
+            <div class="resumen-calculo__grid">
+              <div>
+                <span>Salario base</span>
+
+                <strong id="resumenSalarioBase"> C$ 0.00 </strong>
+              </div>
+
+              <div>
+                <span>Ingresos adicionales</span>
+
+                <strong id="resumenIngresos"> C$ 0.00 </strong>
+              </div>
+
+              <div>
+                <span>Salario bruto</span>
+
+                <strong id="resumenSalarioBruto"> C$ 0.00 </strong>
+              </div>
+
+              <div>
+                <span>Total deducciones</span>
+
+                <strong id="resumenDeducciones"> C$ 0.00 </strong>
+              </div>
+
+              <div class="resumen-calculo__neto">
+                <span>Salario neto estimado</span>
+
+                <strong id="resumenSalarioNeto"> C$ 0.00 </strong>
+              </div>
+            </div>
+          </section>
+
+          <div
+            id="mensajeFormulario"
+            class="mensaje mensaje--oculto mensaje--modal"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCancelarPlanilla"
+              class="boton boton--secundario"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              id="btnGuardarPlanilla"
+              class="boton boton--primario"
+            >
+              Generar planilla
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- Modal para detalle -->
+    <div id="modalDetalle" class="modal modal--oculto" aria-hidden="true">
+      <div id="fondoModalDetalle" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido modal__contenido--grande"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalDetalle"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalDetalle">Detalle de planilla</h3>
+
+          <button
+            type="button"
+            id="btnCerrarModalDetalle"
+            class="modal__cerrar"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="detalle-planilla">
+          <div
+            id="contenidoDetallePlanilla"
+            class="detalle-planilla__contenido"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCerrarDetalle"
+              class="boton boton--secundario"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Modal para cambiar estado -->
+    <div id="modalEstado" class="modal modal--oculto" aria-hidden="true">
+      <div id="fondoModalEstado" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido modal__contenido--pequeno"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalEstado"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalEstado">Cambiar estado</h3>
+
+          <button
+            type="button"
+            id="btnCerrarModalEstado"
+            class="modal__cerrar"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="formEstado" autocomplete="off" novalidate>
+          <input type="hidden" id="idPlanillaEstado" />
+
+          <p id="descripcionCambioEstado" class="descripcion-estado"></p>
+
+          <div class="campo-formulario">
+            <label for="nuevoEstadoPlanilla"> Nuevo estado </label>
+
+            <select id="nuevoEstadoPlanilla" required>
+              <option value="">Seleccione un estado</option>
+
+              <option value="1">Generada</option>
+
+              <option value="2">Pagada</option>
+
+              <option value="3">Anulada</option>
+            </select>
+          </div>
+
+          <div
+            id="mensajeEstado"
+            class="mensaje mensaje--oculto mensaje--modal"
+            role="alert"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCancelarEstado"
+              class="boton boton--secundario"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              id="btnGuardarEstado"
+              class="boton boton--primario"
+            >
+              Guardar estado
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./planillas.js"></script>
+  </body>
+</html>
