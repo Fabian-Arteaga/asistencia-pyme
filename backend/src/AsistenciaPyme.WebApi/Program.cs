@@ -170,5 +170,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/", () => Results.Ok(new
+{
+    aplicacion = "AsistenciaPyme API",
+    estado = "Funcionando"
+}));
 
 app.Run();
