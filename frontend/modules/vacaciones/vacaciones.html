@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Vacaciones</title>
+
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+
+    <link rel="stylesheet" href="./vacaciones.css" />
+  </head>
+
+  <body>
+    <div id="sidebarContainer"></div>
+
+    <div id="topbarContainer"></div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Gestión de vacaciones</h2>
+
+            <p>
+              Registre y consulte los períodos de vacaciones de los empleados.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            id="btnNuevaVacacion"
+            class="boton boton--primario"
+          >
+            Registrar vacaciones
+          </button>
+        </section>
+
+        <section class="panel-vacaciones">
+          <div class="filtros">
+            <div class="campo-filtro campo-filtro--empleado">
+              <label for="filtroEmpleado"> Empleado </label>
+
+              <select id="filtroEmpleado">
+                <option value="">Todos los empleados</option>
+              </select>
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroDesde"> Desde </label>
+
+              <input type="date" id="filtroDesde" />
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroHasta"> Hasta </label>
+
+              <input type="date" id="filtroHasta" />
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroEstado"> Estado </label>
+
+              <select id="filtroEstado">
+                <option value="todos">Todas</option>
+
+                <option value="activas">Activas</option>
+
+                <option value="canceladas">Canceladas</option>
+              </select>
+            </div>
+
+            <div class="filtros__acciones">
+              <button
+                type="button"
+                id="btnLimpiarFiltros"
+                class="boton boton--secundario"
+              >
+                Limpiar
+              </button>
+
+              <button
+                type="button"
+                id="btnActualizar"
+                class="boton boton--secundario"
+              >
+                Actualizar
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="mensajeVacaciones"
+            class="mensaje mensaje--oculto"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <div class="resumen-tabla">
+            <span id="contadorVacaciones"> 0 vacaciones </span>
+          </div>
+
+          <div id="estadoCarga" class="estado-tabla">
+            Cargando vacaciones...
+          </div>
+
+          <div
+            id="contenedorTabla"
+            class="tabla-contenedor tabla-contenedor--oculto"
+          >
+            <table class="tabla-vacaciones">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Fecha inicial</th>
+                  <th>Fecha final</th>
+                  <th>Días</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Registrado por</th>
+
+                  <th class="columna-acciones">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody id="tablaVacacionesBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">
+            No se encontraron vacaciones.
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal para registrar y editar vacaciones -->
+    <div id="modalVacacion" class="modal modal--oculto" aria-hidden="true">
+      <div id="fondoModalVacacion" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalVacacion"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalVacacion">Registrar vacaciones</h3>
+
+          <button
+            type="button"
+            id="btnCerrarModalVacacion"
+            class="modal__cerrar"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="formVacacion" autocomplete="off" novalidate>
+          <input type="hidden" id="idVacacion" />
+
+          <div class="campo-formulario">
+            <label for="empleadoVacacion"> Empleado </label>
+
+            <select id="empleadoVacacion" required>
+              <option value="">Seleccione un empleado</option>
+            </select>
+          </div>
+
+          <div class="formulario-grid">
+            <div class="campo-formulario">
+              <label for="fechaInicioVacacion"> Fecha inicial </label>
+
+              <input type="date" id="fechaInicioVacacion" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="fechaFinVacacion"> Fecha final </label>
+
+              <input type="date" id="fechaFinVacacion" required />
+            </div>
+          </div>
+
+          <div id="resumenDias" class="resumen-dias">
+            Seleccione las fechas para calcular la duración.
+          </div>
+
+          <div class="campo-formulario">
+            <label for="motivoVacacion"> Motivo </label>
+
+            <input
+              type="text"
+              id="motivoVacacion"
+              maxlength="200"
+              placeholder="Ejemplo: Vacaciones anuales"
+              required
+            />
+          </div>
+
+          <div class="campo-formulario">
+            <label for="observacionVacacion"> Observación </label>
+
+            <textarea
+              id="observacionVacacion"
+              rows="4"
+              maxlength="300"
+              placeholder="Información adicional"
+            ></textarea>
+
+            <small> Campo opcional. Máximo 300 caracteres. </small>
+          </div>
+
+          <div
+            id="mensajeFormulario"
+            class="mensaje mensaje--oculto mensaje--modal"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCancelarFormulario"
+              class="boton boton--secundario"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              id="btnGuardarVacacion"
+              class="boton boton--primario"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./vacaciones.js"></script>
+  </body>
+</html>
