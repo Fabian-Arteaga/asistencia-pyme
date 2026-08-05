@@ -27,7 +27,7 @@ Se presentan las tecnologías, la arquitectura, la estructura del proyecto, el d
 | Base de datos        | PostgreSQL                                   | Almacenamiento de información  |
 | Proveedor            | Npgsql                                       | Conexión con PostgreSQL        |
 | Autenticación        | Autenticación personalizada con PBKDF2 + JWT | Acceso al panel administrativo |
-| Frontend             | Html,Css y JavaScript                        | Interfaz web                   |
+| Frontend             | HTML5, CSS3 y JavaScript                     | Interfaz web                   |
 | Documentación API    | Swagger                                      | Pruebas de la API              |
 | Control de versiones | Git y GitHub                                 | Gestión del código             |
 | Documentación        | Markdown y Obsidian                          | Documentación del proyecto     |
@@ -101,7 +101,6 @@ flowchart TB
 
 El proyecto está organizado como un monorepositorio con las carpetas `backend`, `frontend` y `docs`.
 
-```text
 AsistenciaPyme/
 ├── backend/
 │   ├── AsistenciaPyme.slnx
@@ -112,11 +111,25 @@ AsistenciaPyme/
 │       └── AsistenciaPyme.WebApi/
 │
 ├── frontend/
+│   ├── index.html
+│   ├── shared/
+│   │   ├── css/
+│   │   └── js/
+│   └── modules/
+│       ├── kiosco/
+│       ├── login/
+│       ├── dashboard/
+│       ├── cargos/
+│       ├── empleados/
+│       ├── asistencias/
+│       ├── administradores/
+│       └── deducciones/
+│	     └── vacaciones/
+│	     └── planillas/
 │
 └── docs/
     ├── documento-requisitos.md
     └── documento-diseno.md
-```
 
 | Proyecto | Responsabilidad |
 |----------|-----------------|
