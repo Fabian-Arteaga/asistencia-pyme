@@ -8,6 +8,7 @@ import {
 const RUTA_TIPOS_DEDUCCION =
     "/tipos-deduccion";
 
+
 export async function obtenerTiposDeduccion() {
     const respuesta =
         await apiGet(
@@ -32,6 +33,7 @@ export async function obtenerTipoDeduccionPorId(
     );
 }
 
+
 export async function crearTipoDeduccion(
     datos
 ) {
@@ -44,11 +46,19 @@ export async function crearTipoDeduccion(
             descripcion:
                 datos.descripcion,
 
-            porcentaje:
-                datos.porcentaje
+            tipoCalculo:
+                Number(
+                    datos.tipoCalculo
+                ),
+
+            valorPredeterminado:
+                Number(
+                    datos.valorPredeterminado
+                )
         }
     );
 }
+
 
 export async function actualizarTipoDeduccion(
     idTipoDeduccion,
@@ -63,11 +73,19 @@ export async function actualizarTipoDeduccion(
             descripcion:
                 datos.descripcion,
 
-            porcentaje:
-                datos.porcentaje
+            tipoCalculo:
+                Number(
+                    datos.tipoCalculo
+                ),
+
+            valorPredeterminado:
+                Number(
+                    datos.valorPredeterminado
+                )
         }
     );
 }
+
 
 export async function cambiarEstadoTipoDeduccion(
     idTipoDeduccion,
@@ -81,15 +99,22 @@ export async function cambiarEstadoTipoDeduccion(
     );
 }
 
-function normalizarLista(respuesta) {
+function normalizarLista(
+    respuesta
+) {
     if (!respuesta) {
         return [];
     }
 
     let registros;
 
-    if (Array.isArray(respuesta)) {
-        registros = respuesta;
+    if (
+        Array.isArray(
+            respuesta
+        )
+    ) {
+        registros =
+            respuesta;
     } else {
         registros =
             respuesta.items ??
@@ -103,16 +128,25 @@ function normalizarLista(respuesta) {
             [];
     }
 
-    if (!Array.isArray(registros)) {
+    if (
+        !Array.isArray(
+            registros
+        )
+    ) {
         return [];
     }
 
     return registros
-        .map(normalizarTipoDeduccion)
+        .map(
+            normalizarTipoDeduccion
+        )
         .filter(Boolean);
 }
 
-function normalizarTipoDeduccion(tipo) {
+
+function normalizarTipoDeduccion(
+    tipo
+) {
     if (!tipo) {
         return null;
     }
@@ -134,13 +168,15 @@ function normalizarTipoDeduccion(tipo) {
             tipo.Descripcion ??
             "",
 
-        porcentaje:
-            Number(
-                tipo.porcentaje ??
-                tipo.Porcentaje ??
-                tipo.valorPorcentaje ??
-                tipo.ValorPorcentaje ??
-                0
+        tipoCalculo:
+            tipo.tipoCalculo ??
+            tipo.TipoCalculo ??
+            0,
+
+        valorPredeterminado:
+            convertirNumero(
+                tipo.valorPredeterminado ??
+                tipo.ValorPredeterminado
             ),
 
         activo:
@@ -153,23 +189,50 @@ function normalizarTipoDeduccion(tipo) {
     };
 }
 
-function convertirActivo(valor) {
-    if (typeof valor === "boolean") {
+
+
+function convertirNumero(
+    valor
+) {
+    const numero =
+        Number(valor);
+
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+}
+
+function convertirActivo(
+    valor
+) {
+    if (
+        typeof valor ===
+        "boolean"
+    ) {
         return valor;
     }
 
-    if (typeof valor === "number") {
+    if (
+        typeof valor ===
+        "number"
+    ) {
         return valor === 1;
     }
 
-    if (typeof valor === "string") {
-        const estado =
-            valor.trim().toLowerCase();
+    if (
+        typeof valor ===
+        "string"
+    ) {
+        const texto =
+            valor
+                .trim()
+                .toLowerCase();
 
         return (
-            estado === "activo" ||
-            estado === "true" ||
-            estado === "1"
+            texto === "activo" ||
+            texto === "activa" ||
+            texto === "true" ||
+            texto === "1"
         );
     }
 

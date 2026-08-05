@@ -15,6 +15,9 @@ import {
 } from "../deducciones/deducciones.services.js";
 
 
+const TIPO_PORCENTAJE = 1;
+const TIPO_MONTO_FIJO = 2;
+
 const botonNuevaDeduccion =
     document.getElementById(
         "btnNuevaDeduccion"
@@ -65,9 +68,6 @@ const mensajeDeducciones =
         "mensajeDeducciones"
     );
 
-/* =========================
-   MODAL
-   ========================= */
 
 const modalDeduccion =
     document.getElementById(
@@ -94,9 +94,19 @@ const inputNombre =
         "nombreDeduccion"
     );
 
-const inputPorcentaje =
+const selectTipoCalculo =
     document.getElementById(
-        "porcentajeDeduccion"
+        "tipoCalculoDeduccion"
+    );
+
+const inputValorPredeterminado =
+    document.getElementById(
+        "valorPredeterminadoDeduccion"
+    );
+
+const ayudaValorPredeterminado =
+    document.getElementById(
+        "ayudaValorPredeterminado"
     );
 
 const inputDescripcion =
@@ -129,16 +139,10 @@ const mensajeFormulario =
         "mensajeFormulario"
     );
 
-/* =========================
-   VARIABLES
-   ========================= */
 
 let tiposDeduccion = [];
 let temporizadorMensaje = null;
 
-/* =========================
-   INICIALIZACIÓN
-   ========================= */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -171,7 +175,7 @@ function configurarEventos() {
 
     botonActualizar.addEventListener(
         "click",
-        cargarTiposDeduccion
+        () => cargarTiposDeduccion()
     );
 
     inputBuscar.addEventListener(
@@ -189,6 +193,11 @@ function configurarEventos() {
         guardarTipoDeduccion
     );
 
+    selectTipoCalculo.addEventListener(
+        "change",
+        manejarCambioTipoCalculo
+    );
+
     botonCerrarModalDeduccion.addEventListener(
         "click",
         cerrarModal
@@ -204,15 +213,16 @@ function configurarEventos() {
         cerrarModal
     );
 
+    tablaDeduccionesBody.addEventListener(
+        "click",
+        manejarAccionTabla
+    );
+
     document.addEventListener(
         "keydown",
         manejarTeclaEscape
     );
 }
-
-/* =========================
-   CARGA
-   ========================= */
 
 async function cargarTiposDeduccion(
     limpiarMensaje = true
@@ -265,10 +275,6 @@ function ordenarTiposDeduccion() {
     );
 }
 
-/* =========================
-   FILTROS
-   ========================= */
-
 function aplicarFiltros() {
     const texto =
         inputBuscar.value
@@ -280,14 +286,20 @@ function aplicarFiltros() {
 
     const resultados =
         tiposDeduccion.filter(tipo => {
+            const nombre =
+                String(
+                    tipo.nombre ?? ""
+                ).toLowerCase();
+
+            const descripcion =
+                String(
+                    tipo.descripcion ?? ""
+                ).toLowerCase();
+
             const coincideTexto =
                 !texto ||
-                tipo.nombre
-                    .toLowerCase()
-                    .includes(texto) ||
-                tipo.descripcion
-                    .toLowerCase()
-                    .includes(texto);
+                nombre.includes(texto) ||
+                descripcion.includes(texto);
 
             const coincideEstado =
                 estado === "todos" ||
@@ -311,11 +323,10 @@ function aplicarFiltros() {
     );
 }
 
-/* =========================
-   TABLA
-   ========================= */
 
-function renderizarTiposDeduccion(lista) {
+function renderizarTiposDeduccion(
+    lista
+) {
     tablaDeduccionesBody.innerHTML =
         "";
 
@@ -367,26 +378,49 @@ function renderizarTiposDeduccion(lista) {
             tipo.descripcion ||
             "Sin descripción";
 
+        const nombreTipoCalculo =
+            obtenerNombreTipoCalculo(
+                tipo.tipoCalculo
+            );
+
+        const valorFormateado =
+            formatearValorPredeterminado(
+                tipo.tipoCalculo,
+                tipo.valorPredeterminado
+            );
+
         fila.innerHTML = `
             <td>
                 <span class="deduccion-nombre">
-                    ${escaparHtml(tipo.nombre)}
+                    ${escaparHtml(
+                        tipo.nombre
+                    )}
                 </span>
             </td>
 
             <td>
                 <span
                     class="deduccion-descripcion"
-                    title="${escaparAtributo(descripcion)}"
+                    title="${escaparAtributo(
+                        descripcion
+                    )}"
                 >
-                    ${escaparHtml(descripcion)}
+                    ${escaparHtml(
+                        descripcion
+                    )}
                 </span>
             </td>
 
             <td>
+                ${escaparHtml(
+                    nombreTipoCalculo
+                )}
+            </td>
+
+            <td>
                 <span class="porcentaje">
-                    ${formatearPorcentaje(
-                        tipo.porcentaje
+                    ${escaparHtml(
+                        valorFormateado
                     )}
                 </span>
             </td>
@@ -424,55 +458,66 @@ function renderizarTiposDeduccion(lista) {
             fila
         );
     });
-
-    configurarBotonesTabla();
 }
 
-function configurarBotonesTabla() {
-    document
-        .querySelectorAll(
-            '[data-accion="editar"]'
-        )
-        .forEach(boton => {
-            boton.addEventListener(
-                "click",
-                () => {
-                    abrirModalEditar(
-                        Number(
-                            boton.dataset.id
-                        )
-                    );
-                }
-            );
-        });
+function manejarAccionTabla(
+    event
+) {
+    const boton =
+        event.target.closest(
+            "[data-accion]"
+        );
 
-    document
-        .querySelectorAll(
-            '[data-accion="estado"]'
-        )
-        .forEach(boton => {
-            boton.addEventListener(
-                "click",
-                () => {
-                    procesarCambioEstado(
-                        Number(
-                            boton.dataset.id
-                        ),
-                        boton
-                    );
-                }
-            );
-        });
+    if (!boton) {
+        return;
+    }
+
+    const idTipoDeduccion =
+        Number(
+            boton.dataset.id
+        );
+
+    if (
+        !Number.isInteger(
+            idTipoDeduccion
+        ) ||
+        idTipoDeduccion <= 0
+    ) {
+        return;
+    }
+
+    const accion =
+        boton.dataset.accion;
+
+    if (accion === "editar") {
+        abrirModalEditar(
+            idTipoDeduccion
+        );
+
+        return;
+    }
+
+    if (accion === "estado") {
+        procesarCambioEstado(
+            idTipoDeduccion,
+            boton
+        );
+    }
 }
-
-/* =========================
-   CREAR Y EDITAR
-   ========================= */
 
 function abrirModalNuevo() {
     formDeduccion.reset();
 
-    inputIdTipoDeduccion.value = "";
+    inputIdTipoDeduccion.value =
+        "";
+
+    selectTipoCalculo.value =
+        String(
+            TIPO_PORCENTAJE
+        );
+
+    inputValorPredeterminado.value =
+        "";
 
     tituloModalDeduccion.textContent =
         "Nueva deducción";
@@ -481,7 +526,7 @@ function abrirModalNuevo() {
         "Guardar";
 
     limpiarMensajeFormulario();
-
+    actualizarAyudaTipoCalculo();
     mostrarModal();
 
     inputNombre.focus();
@@ -499,7 +544,9 @@ async function abrirModalEditar(
                     Number(
                         item.idTipoDeduccion
                     ) ===
-                    Number(idTipoDeduccion)
+                    Number(
+                        idTipoDeduccion
+                    )
             );
 
         if (!tipo) {
@@ -523,11 +570,20 @@ async function abrirModalEditar(
         inputNombre.value =
             tipo.nombre;
 
-        inputPorcentaje.value =
-            tipo.porcentaje;
+        selectTipoCalculo.value =
+            String(
+                convertirTipoCalculoANumero(
+                    tipo.tipoCalculo
+                )
+            );
+
+        inputValorPredeterminado.value =
+            Number(
+                tipo.valorPredeterminado
+            );
 
         inputDescripcion.value =
-            tipo.descripcion;
+            tipo.descripcion ?? "";
 
         tituloModalDeduccion.textContent =
             "Editar deducción";
@@ -535,6 +591,7 @@ async function abrirModalEditar(
         botonGuardarDeduccion.textContent =
             "Guardar cambios";
 
+        actualizarAyudaTipoCalculo();
         mostrarModal();
 
         inputNombre.focus();
@@ -549,28 +606,42 @@ async function abrirModalEditar(
     }
 }
 
-async function guardarTipoDeduccion(event) {
+
+async function guardarTipoDeduccion(
+    event
+) {
     event.preventDefault();
 
     limpiarMensajeFormulario();
 
     const idTipoDeduccion =
-        inputIdTipoDeduccion.value.trim();
+        inputIdTipoDeduccion.value
+            .trim();
 
     const datos = {
         nombre:
             inputNombre.value.trim(),
 
-        porcentaje:
-            Number(inputPorcentaje.value),
-
         descripcion:
-            inputDescripcion.value.trim() ||
-            null
+            inputDescripcion.value
+                .trim() ||
+            null,
+
+        tipoCalculo:
+            Number(
+                selectTipoCalculo.value
+            ),
+
+        valorPredeterminado:
+            Number(
+                inputValorPredeterminado.value
+            )
     };
 
     const errorValidacion =
-        validarDatos(datos);
+        validarDatos(
+            datos
+        );
 
     if (errorValidacion) {
         mostrarMensajeFormulario(
@@ -586,13 +657,16 @@ async function guardarTipoDeduccion(event) {
                 tipo.nombre
                     .trim()
                     .toLowerCase() ===
-                datos.nombre.toLowerCase();
+                datos.nombre
+                    .toLowerCase();
 
             const mismoRegistro =
                 Number(
                     tipo.idTipoDeduccion
                 ) ===
-                Number(idTipoDeduccion);
+                Number(
+                    idTipoDeduccion
+                );
 
             return (
                 mismoNombre &&
@@ -606,15 +680,20 @@ async function guardarTipoDeduccion(event) {
         );
 
         inputNombre.focus();
+
         return;
     }
 
-    bloquearFormulario(true);
+    bloquearFormulario(
+        true
+    );
 
     try {
         if (idTipoDeduccion) {
             await actualizarTipoDeduccion(
-                Number(idTipoDeduccion),
+                Number(
+                    idTipoDeduccion
+                ),
                 datos
             );
 
@@ -637,7 +716,9 @@ async function guardarTipoDeduccion(event) {
             );
         }
 
-        await cargarTiposDeduccion(false);
+        await cargarTiposDeduccion(
+            false
+        );
     } catch (error) {
         console.error(error);
 
@@ -646,40 +727,133 @@ async function guardarTipoDeduccion(event) {
             "No fue posible guardar el tipo de deducción."
         );
     } finally {
-        bloquearFormulario(false);
+        bloquearFormulario(
+            false
+        );
     }
 }
 
-function validarDatos(datos) {
+function validarDatos(
+    datos
+) {
     if (!datos.nombre) {
-        return "Debe ingresar el nombre de la deducción.";
+        return (
+            "Debe ingresar el nombre de la deducción."
+        );
     }
 
-    if (datos.nombre.length < 2) {
-        return "El nombre debe contener al menos 2 caracteres.";
+    if (
+        datos.nombre.length < 2
+    ) {
+        return (
+            "El nombre debe contener al menos 2 caracteres."
+        );
+    }
+
+    if (
+        datos.tipoCalculo !==
+            TIPO_PORCENTAJE &&
+        datos.tipoCalculo !==
+            TIPO_MONTO_FIJO
+    ) {
+        return (
+            "Debe seleccionar un tipo de cálculo."
+        );
     }
 
     if (
         !Number.isFinite(
-            datos.porcentaje
+            datos.valorPredeterminado
         )
     ) {
-        return "Debe ingresar un porcentaje válido.";
+        return (
+            "Debe ingresar un valor predeterminado válido."
+        );
     }
 
     if (
-        datos.porcentaje < 0 ||
-        datos.porcentaje > 100
+        datos.valorPredeterminado < 0
     ) {
-        return "El porcentaje debe estar entre 0 y 100.";
+        return (
+            "El valor predeterminado no puede ser negativo."
+        );
+    }
+
+    if (
+        datos.tipoCalculo ===
+            TIPO_PORCENTAJE &&
+        datos.valorPredeterminado > 100
+    ) {
+        return (
+            "El porcentaje no puede ser mayor que 100."
+        );
+    }
+
+    if (
+        datos.descripcion &&
+        datos.descripcion.length > 300
+    ) {
+        return (
+            "La descripción no puede superar los 300 caracteres."
+        );
     }
 
     return null;
 }
+function manejarCambioTipoCalculo() {
+    actualizarAyudaTipoCalculo();
 
-/* =========================
-   CAMBIAR ESTADO
-   ========================= */
+    inputValorPredeterminado.value =
+        "";
+}
+
+function actualizarAyudaTipoCalculo() {
+    const tipoCalculo =
+        Number(
+            selectTipoCalculo.value
+        );
+
+    if (
+        tipoCalculo ===
+        TIPO_PORCENTAJE
+    ) {
+        ayudaValorPredeterminado.textContent =
+            "Ingrese un porcentaje entre 0 y 100.";
+
+        inputValorPredeterminado.max =
+            "100";
+
+        inputValorPredeterminado.placeholder =
+            "Ejemplo: 7.00";
+
+        return;
+    }
+
+    if (
+        tipoCalculo ===
+        TIPO_MONTO_FIJO
+    ) {
+        ayudaValorPredeterminado.textContent =
+            "Ingrese el monto fijo que será descontado.";
+
+        inputValorPredeterminado.max =
+            "999999999.99";
+
+        inputValorPredeterminado.placeholder =
+            "Ejemplo: 500.00";
+
+        return;
+    }
+
+    ayudaValorPredeterminado.textContent =
+        "Seleccione primero el tipo de cálculo.";
+
+    inputValorPredeterminado.max =
+        "999999999.99";
+
+    inputValorPredeterminado.placeholder =
+        "0.00";
+}
 
 async function procesarCambioEstado(
     idTipoDeduccion,
@@ -691,7 +865,9 @@ async function procesarCambioEstado(
                 Number(
                     item.idTipoDeduccion
                 ) ===
-                Number(idTipoDeduccion)
+                Number(
+                    idTipoDeduccion
+                )
         );
 
     if (!tipo) {
@@ -715,7 +891,8 @@ async function procesarCambioEstado(
         return;
     }
 
-    boton.disabled = true;
+    boton.disabled =
+        true;
 
     boton.textContent =
         nuevoEstado
@@ -735,7 +912,9 @@ async function procesarCambioEstado(
             "exito"
         );
 
-        await cargarTiposDeduccion(false);
+        await cargarTiposDeduccion(
+            false
+        );
     } catch (error) {
         console.error(error);
 
@@ -745,7 +924,8 @@ async function procesarCambioEstado(
             "error"
         );
 
-        boton.disabled = false;
+        boton.disabled =
+            false;
 
         boton.textContent =
             nuevoEstado
@@ -753,10 +933,6 @@ async function procesarCambioEstado(
                 : "Desactivar";
     }
 }
-
-/* =========================
-   MODAL
-   ========================= */
 
 function mostrarModal() {
     modalDeduccion.classList.remove(
@@ -787,12 +963,22 @@ function cerrarModal() {
 
     formDeduccion.reset();
 
-    inputIdTipoDeduccion.value = "";
+    inputIdTipoDeduccion.value =
+        "";
+
+    selectTipoCalculo.value =
+        "";
+
+    inputValorPredeterminado.value =
+        "";
 
     limpiarMensajeFormulario();
+    actualizarAyudaTipoCalculo();
 }
 
-function manejarTeclaEscape(event) {
+function manejarTeclaEscape(
+    event
+) {
     if (
         event.key === "Escape" &&
         !modalDeduccion.classList.contains(
@@ -809,7 +995,10 @@ function bloquearFormulario(
     inputNombre.disabled =
         bloqueado;
 
-    inputPorcentaje.disabled =
+    selectTipoCalculo.disabled =
+        bloqueado;
+
+    inputValorPredeterminado.disabled =
         bloqueado;
 
     inputDescripcion.disabled =
@@ -832,21 +1021,20 @@ function bloquearFormulario(
                 : "Guardar";
 }
 
-/* =========================
-   CONTADOR Y CARGA
-   ========================= */
-
 function actualizarContador() {
     const activos =
         tiposDeduccion.filter(
-            tipo => tipo.activo
+            tipo =>
+                tipo.activo
         ).length;
 
     contadorDeducciones.textContent =
         `${tiposDeduccion.length} registrados · ${activos} activos`;
 }
 
-function mostrarCargando(cargando) {
+function mostrarCargando(
+    cargando
+) {
     if (cargando) {
         estadoCarga.classList.remove(
             "estado-tabla--oculto"
@@ -868,15 +1056,13 @@ function mostrarCargando(cargando) {
     );
 }
 
-/* =========================
-   MENSAJES
-   ========================= */
-
 function mostrarMensajePrincipal(
     mensaje,
     tipo
 ) {
-    clearTimeout(temporizadorMensaje);
+    clearTimeout(
+        temporizadorMensaje
+    );
 
     mensajeDeducciones.textContent =
         mensaje;
@@ -894,7 +1080,9 @@ function mostrarMensajePrincipal(
 }
 
 function ocultarMensajePrincipal() {
-    clearTimeout(temporizadorMensaje);
+    clearTimeout(
+        temporizadorMensaje
+    );
 
     mensajeDeducciones.textContent =
         "";
@@ -921,24 +1109,137 @@ function limpiarMensajeFormulario() {
         "mensaje mensaje--oculto mensaje--modal";
 }
 
-/* =========================
-   FORMATO Y SEGURIDAD
-   ========================= */
+function convertirTipoCalculoANumero(
+    tipoCalculo
+) {
+    if (
+        Number(tipoCalculo) ===
+        TIPO_PORCENTAJE
+    ) {
+        return TIPO_PORCENTAJE;
+    }
 
-function formatearPorcentaje(valor) {
+    if (
+        Number(tipoCalculo) ===
+        TIPO_MONTO_FIJO
+    ) {
+        return TIPO_MONTO_FIJO;
+    }
+
+    const texto =
+        String(
+            tipoCalculo ?? ""
+        )
+            .trim()
+            .toLowerCase();
+
+    if (
+        texto.includes(
+            "porcentaje"
+        )
+    ) {
+        return TIPO_PORCENTAJE;
+    }
+
+    if (
+        texto.includes("monto") ||
+        texto.includes("fijo")
+    ) {
+        return TIPO_MONTO_FIJO;
+    }
+
+    return 0;
+}
+
+function obtenerNombreTipoCalculo(
+    tipoCalculo
+) {
+    const tipo =
+        convertirTipoCalculoANumero(
+            tipoCalculo
+        );
+
+    if (
+        tipo ===
+        TIPO_PORCENTAJE
+    ) {
+        return "Porcentaje";
+    }
+
+    if (
+        tipo ===
+        TIPO_MONTO_FIJO
+    ) {
+        return "Monto fijo";
+    }
+
+    return "Sin definir";
+}
+
+function formatearValorPredeterminado(
+    tipoCalculo,
+    valor
+) {
     const numero =
         Number(valor);
 
-    if (!Number.isFinite(numero)) {
-        return "0.00 %";
+    const valorSeguro =
+        Number.isFinite(numero)
+            ? numero
+            : 0;
+
+    const tipo =
+        convertirTipoCalculoANumero(
+            tipoCalculo
+        );
+
+    if (
+        tipo ===
+        TIPO_PORCENTAJE
+    ) {
+        return `${valorSeguro.toFixed(2)} %`;
     }
 
-    return `${numero.toFixed(2)} %`;
+    if (
+        tipo ===
+        TIPO_MONTO_FIJO
+    ) {
+        return formatearMoneda(
+            valorSeguro
+        );
+    }
+
+    return valorSeguro.toFixed(2);
 }
 
-function escaparHtml(texto) {
+function formatearMoneda(
+    valor
+) {
+    const numero =
+        Number(valor);
+
+    return new Intl.NumberFormat(
+        "es-NI",
+        {
+            style: "currency",
+            currency: "NIO",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    ).format(
+        Number.isFinite(numero)
+            ? numero
+            : 0
+    );
+}
+
+function escaparHtml(
+    texto
+) {
     const elemento =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     elemento.textContent =
         texto ?? "";
@@ -946,8 +1247,12 @@ function escaparHtml(texto) {
     return elemento.innerHTML;
 }
 
-function escaparAtributo(texto) {
-    return String(texto ?? "")
+function escaparAtributo(
+    texto
+) {
+    return String(
+        texto ?? ""
+    )
         .replace(/&/g, "&amp;")
         .replace(/"/g, "&quot;")
         .replace(/</g, "&lt;")
