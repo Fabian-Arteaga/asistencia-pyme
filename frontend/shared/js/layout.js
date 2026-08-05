@@ -76,10 +76,9 @@ function renderizarSidebar() {
                 </a>
 
                 <a
-                    href="../cargos/cargos.html"
+                    href="../../modules/cargos/cargos.html"
                     class="menu-link"
                     data-menu="cargos"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         C
