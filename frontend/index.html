@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Registro de asistencia</title>
+
+    <link rel="stylesheet" href="./modules/kiosco/kiosco.css" />
+  </head>
+
+  <body>
+    <header class="encabezado">
+      <div class="encabezado__contenido">
+        <h1>AsistenciaPyme</h1>
+
+        <a href="./modules/login/login.html" class="enlace-admin">
+          Acceso administrador
+        </a>
+      </div>
+    </header>
+
+    <main class="contenedor">
+      <section class="tarjeta-marcaje">
+        <div class="tarjeta-marcaje__encabezado">
+          <h2>Registro de asistencia</h2>
+
+          <p>Ingrese su código de empleado y PIN.</p>
+        </div>
+
+        <div class="reloj">
+          <span id="horaActual"> --:--:-- </span>
+
+          <small id="fechaActual"> Cargando fecha... </small>
+        </div>
+
+        <form id="formMarcaje" autocomplete="off" novalidate>
+          <div class="campo">
+            <label for="codigoEmpleado"> Código de empleado </label>
+
+            <input
+              type="text"
+              id="codigoEmpleado"
+              name="codigoKiosco"
+              maxlength="20"
+              placeholder="Ingrese su codigo de empleado"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              readonly
+              required
+            />
+          </div>
+
+          <div class="campo">
+            <label for="pin"> PIN </label>
+
+            <input
+              type="password"
+              id="pin"
+              name="pinKiosco"
+              inputmode="numeric"
+              minlength="4"
+              maxlength="6"
+              pattern="[0-9]{4,6}"
+              placeholder="Ingrese su PIN"
+              autocomplete="new-password"
+              readonly
+              required
+            />
+          </div>
+
+          <button type="submit" id="btnMarcar" class="boton-principal">
+            Marcar asistencia
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="pie-pagina">
+      <p>Sistema de control de asistencia</p>
+    </footer>
+
+    <div
+      id="popupMarcaje"
+      class="popup popup--oculto"
+      role="alert"
+      aria-live="assertive"
+      aria-hidden="true"
+    >
+      <div class="popup__contenido">
+        <div id="popupIcono" class="popup__icono">✓</div>
+
+        <h3 id="popupTitulo">Asistencia registrada</h3>
+
+        <p id="popupMensaje"></p>
+      </div>
+    </div>
+
+    <script type="module" src="./modules/kiosco/kiosco.js"></script>
+  </body>
+</html>
