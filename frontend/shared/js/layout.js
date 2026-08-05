@@ -90,7 +90,6 @@ function renderizarSidebar() {
                     href="../asistencias/asistencias.html"
                     class="menu-link"
                     data-menu="asistencias"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         A
@@ -103,7 +102,6 @@ function renderizarSidebar() {
                     href="../vacaciones/vacaciones.html"
                     class="menu-link"
                     data-menu="vacaciones"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         V
@@ -116,7 +114,6 @@ function renderizarSidebar() {
                     href="../deducciones/deducciones.html"
                     class="menu-link"
                     data-menu="deducciones"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         TD
@@ -129,7 +126,6 @@ function renderizarSidebar() {
                     href="../planillas/planillas.html"
                     class="menu-link"
                     data-menu="planillas"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         P
@@ -142,7 +138,6 @@ function renderizarSidebar() {
                     href="../administradores/administradores.html"
                     class="menu-link"
                     data-menu="administradores"
-                    data-pendiente="true"
                 >
                     <span class="menu-link__icono">
                         AD
@@ -316,26 +311,6 @@ function configurarEventos() {
         "click",
         cerrarSesion
     );
-
-    const enlacesPendientes =
-        document.querySelectorAll(
-            '[data-pendiente="true"]'
-        );
-
-    enlacesPendientes.forEach(enlace => {
-        enlace.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-
-                alert(
-                    "Este módulo se implementará en el siguiente paso."
-                );
-
-                cerrarSidebar();
-            }
-        );
-    });
 }
 
 function alternarSidebar() {

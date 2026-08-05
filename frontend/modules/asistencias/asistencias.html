@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Asistencias</title>
+
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+
+    <link rel="stylesheet" href="./asistencias.css" />
+  </head>
+
+  <body>
+    <div id="sidebarContainer"></div>
+
+    <div id="topbarContainer"></div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Gestión de asistencias</h2>
+
+            <p>Consulte las entradas y salidas de los empleados.</p>
+          </div>
+
+          <button
+            type="button"
+            id="btnNuevaAsistencia"
+            class="boton boton--primario"
+          >
+            Registrar manualmente
+          </button>
+        </section>
+
+        <section class="panel-asistencias">
+          <div class="filtros">
+            <div class="campo-filtro campo-filtro--empleado">
+              <label for="filtroEmpleado"> Empleado </label>
+
+              <select id="filtroEmpleado">
+                <option value="">Todos los empleados</option>
+              </select>
+            </div>
+
+            <div class="campo-filtro">
+              <label for="fechaInicio"> Desde </label>
+
+              <input type="date" id="fechaInicio" />
+            </div>
+
+            <div class="campo-filtro">
+              <label for="fechaFin"> Hasta </label>
+
+              <input type="date" id="fechaFin" />
+            </div>
+
+            <div class="campo-filtro">
+              <label for="filtroEstado"> Estado </label>
+
+              <select id="filtroEstado">
+                <option value="">Todas</option>
+
+                <option value="completa">Completas</option>
+
+                <option value="pendiente">Pendientes</option>
+              </select>
+            </div>
+
+            <div class="filtros__acciones">
+              <button
+                type="button"
+                id="btnLimpiarFiltros"
+                class="boton boton--secundario"
+              >
+                Limpiar
+              </button>
+
+              <button
+                type="button"
+                id="btnActualizar"
+                class="boton boton--secundario"
+              >
+                Actualizar
+              </button>
+            </div>
+          </div>
+
+          <div class="resumen">
+            <span id="contadorAsistencias"> 0 registros </span>
+          </div>
+
+          <div
+            id="mensajeAsistencias"
+            class="mensaje mensaje--oculto"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <div id="estadoCarga" class="estado-tabla">
+            Cargando asistencias...
+          </div>
+
+          <div
+            id="contenedorTabla"
+            class="tabla-contenedor tabla-contenedor--oculto"
+          >
+            <table class="tabla-asistencias">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Fecha</th>
+                  <th>Entrada</th>
+                  <th>Salida</th>
+                  <th>Duración</th>
+                  <th>Estado</th>
+                  <th>Observación</th>
+
+                  <th class="columna-acciones">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody id="tablaAsistenciasBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">
+            No se encontraron registros de asistencia.
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal de registro manual -->
+    <div id="modalAsistencia" class="modal modal--oculto" aria-hidden="true">
+      <div id="fondoModal" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalManual"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalManual">Registrar asistencia manual</h3>
+
+          <button
+            type="button"
+            id="btnCerrarModal"
+            class="modal__cerrar"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="formAsistencia" autocomplete="off" novalidate>
+          <div class="campo-formulario">
+            <label for="empleadoManual"> Empleado </label>
+
+            <select id="empleadoManual" required>
+              <option value="">Seleccione un empleado</option>
+            </select>
+          </div>
+
+          <div class="formulario-grid">
+            <div class="campo-formulario">
+              <label for="horaEntrada"> Fecha y hora de entrada </label>
+
+              <input type="datetime-local" id="horaEntrada" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="horaSalida"> Fecha y hora de salida </label>
+
+              <input type="datetime-local" id="horaSalida" />
+
+              <small> Puede dejarse vacía si la jornada sigue abierta. </small>
+            </div>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="observacion"> Observación </label>
+
+            <textarea
+              id="observacion"
+              rows="4"
+              maxlength="300"
+              placeholder="Explique el motivo del registro manual"
+              required
+            ></textarea>
+
+            <small> Máximo 300 caracteres. </small>
+          </div>
+
+          <div
+            id="mensajeFormulario"
+            class="mensaje mensaje--oculto mensaje--modal"
+            role="alert"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCancelar"
+              class="boton boton--secundario"
+            >
+              Cancelar
+            </button>
+
+            <button type="submit" id="btnGuardar" class="boton boton--primario">
+              Registrar
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- Modal para corregir asistencia -->
+    <div id="modalCorreccion" class="modal modal--oculto" aria-hidden="true">
+      <div id="fondoModalCorreccion" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalCorreccion"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalCorreccion">Corregir asistencia</h3>
+
+          <button
+            type="button"
+            id="btnCerrarCorreccion"
+            class="modal__cerrar"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="formCorreccion" autocomplete="off" novalidate>
+          <input type="hidden" id="idAsistenciaCorreccion" />
+
+          <div class="campo-formulario">
+            <label for="empleadoCorreccion"> Empleado </label>
+
+            <input type="text" id="empleadoCorreccion" disabled />
+          </div>
+
+          <div class="formulario-grid">
+            <div class="campo-formulario">
+              <label for="entradaCorreccion"> Fecha y hora de entrada </label>
+
+              <input type="datetime-local" id="entradaCorreccion" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="salidaCorreccion"> Fecha y hora de salida </label>
+
+              <input type="datetime-local" id="salidaCorreccion" />
+
+              <small> Déjela vacía si la jornada continúa pendiente. </small>
+            </div>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="observacionCorreccion"> Observación </label>
+
+            <textarea
+              id="observacionCorreccion"
+              rows="3"
+              maxlength="300"
+              placeholder="Observación de la asistencia"
+            ></textarea>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="motivoCorreccion"> Motivo de la corrección </label>
+
+            <textarea
+              id="motivoCorreccion"
+              rows="3"
+              minlength="5"
+              maxlength="300"
+              placeholder="Ejemplo: El empleado olvidó marcar la salida"
+              required
+            ></textarea>
+
+            <small> Debe explicar por qué se modificó la asistencia. </small>
+          </div>
+
+          <div
+            id="mensajeCorreccion"
+            class="mensaje mensaje--oculto mensaje--modal"
+            role="alert"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCancelarCorreccion"
+              class="boton boton--secundario"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              id="btnGuardarCorreccion"
+              class="boton boton--primario"
+            >
+              Guardar corrección
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./asistencias.js"></script>
+  </body>
+</html>
