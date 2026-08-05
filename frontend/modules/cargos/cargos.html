@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>AsistenciaPyme | Cargos</title>
+
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+
+    <link rel="stylesheet" href="./cargos.css" />
+  </head>
+
+  <body>
+    <div id="sidebarContainer"></div>
+
+    <div id="topbarContainer"></div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Gestión de cargos</h2>
+
+            <p>Administre los cargos disponibles para los empleados.</p>
+          </div>
+
+          <button
+            type="button"
+            id="btnNuevoCargo"
+            class="boton boton--primario"
+          >
+            Nuevo cargo
+          </button>
+        </section>
+
+        <section class="panel-cargos">
+          <div class="panel-cargos__herramientas">
+            <div class="campo-busqueda">
+              <label for="buscarCargo"> Buscar </label>
+
+              <input
+                type="search"
+                id="buscarCargo"
+                placeholder="Buscar por nombre..."
+                autocomplete="off"
+              />
+            </div>
+
+            <button
+              type="button"
+              id="btnActualizar"
+              class="boton boton--secundario"
+            >
+              Actualizar
+            </button>
+          </div>
+
+          <div
+            id="mensajeCargos"
+            class="mensaje mensaje--oculto"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <div id="estadoCarga" class="estado-tabla">Cargando cargos...</div>
+
+          <div
+            id="contenedorTabla"
+            class="tabla-contenedor tabla-contenedor--oculto"
+          >
+            <table class="tabla-cargos">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                  <th class="columna-acciones">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody id="tablaCargosBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">
+            No se encontraron cargos.
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal para crear y editar cargo -->
+    <div id="modalCargo" class="modal modal--oculto" aria-hidden="true">
+      <div id="modalFondo" class="modal__fondo"></div>
+
+      <section
+        class="modal__contenido"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloModalCargo"
+      >
+        <div class="modal__encabezado">
+          <h3 id="tituloModalCargo">Nuevo cargo</h3>
+
+          <button
+            type="button"
+            id="btnCerrarModal"
+            class="modal__cerrar"
+            aria-label="Cerrar ventana"
+          >
+            ×
+          </button>
+        </div>
+
+        <form id="formCargo" autocomplete="off" novalidate>
+          <input type="hidden" id="idCargo" />
+
+          <div class="campo-formulario">
+            <label for="nombreCargo"> Nombre del cargo </label>
+
+            <input
+              type="text"
+              id="nombreCargo"
+              maxlength="100"
+              placeholder="Ejemplo: Contador"
+              required
+            />
+
+            <small> Máximo 100 caracteres. </small>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="descripcionCargo"> Descripción </label>
+
+            <textarea
+              id="descripcionCargo"
+              maxlength="300"
+              rows="4"
+              placeholder="Descripción breve del cargo"
+            ></textarea>
+
+            <small> Campo opcional. </small>
+          </div>
+
+          <div
+            id="mensajeFormulario"
+            class="mensaje mensaje--oculto"
+            role="alert"
+          ></div>
+
+          <div class="modal__acciones">
+            <button
+              type="button"
+              id="btnCancelar"
+              class="boton boton--secundario"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              id="btnGuardarCargo"
+              class="boton boton--primario"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./cargos.js"></script>
+  </body>
+</html>
