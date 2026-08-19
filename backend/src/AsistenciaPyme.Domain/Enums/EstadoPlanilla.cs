@@ -7,7 +7,10 @@ namespace AsistenciaPyme.Domain.Enums
     public enum EstadoPlanilla
     {
         Borrador = 1,
-        Generada = 2,
-        Anulada = 3
+        Calculada = 2,
+        EnRevision = 3,
+        Cerrada = 4,
+        Pagada = 5,
+        Anulada = 6
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Feautures.Asistencias;
 using AsistenciaPyme.Application.Feautures.Asistencias.DTOs;
 using AsistenciaPyme.Domain.Entities;
 using AsistenciaPyme.Domain.Enums;
@@ -35,10 +36,10 @@ public class MarcarAsistenciaHandler
         string codigoEmpleado = request.CodigoEmpleado.Trim();
 
         Empleado? empleado = await _context.Empleados
-            .AsNoTracking()
+            .Include(e => e.HorarioLaboral)
             .FirstOrDefaultAsync(
                 e => e.CodigoEmpleado.ToLower() ==
-                     codigoEmpleado.ToLower(),
+                    codigoEmpleado.ToLower(),
                 cancellationToken);
 
         if (empleado is null)
@@ -63,7 +64,19 @@ public class MarcarAsistenciaHandler
                 "El empleado está inactivo y no puede marcar asistencia.");
         }
 
+        var configuracion = await _context.ConfiguracionesNomina
+            .OrderBy(c => c.IdConfiguracionNomina)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (configuracion is null)
+        {
+            configuracion = new ConfiguracionNomina();
+            await _context.ConfiguracionesNomina.AddAsync(configuracion, cancellationToken);
+        }
+
         DateTime fechaHoraActual = DateTime.UtcNow;
+        DateTime horaProgramadaEntrada = ObtenerHoraProgramada(fechaHoraActual, empleado.HorarioLaboral?.HoraEntrada ?? new TimeOnly(8, 0));
+        DateTime horaProgramadaSalida = ObtenerHoraProgramada(fechaHoraActual, empleado.HorarioLaboral?.HoraSalida ?? new TimeOnly(17, 0));
 
         Asistencia? asistenciaAbierta = await _context.Asistencias
             .Where(a =>
@@ -74,20 +87,24 @@ public class MarcarAsistenciaHandler
 
         if (asistenciaAbierta is null)
         {
+            var minutosTardanza = AsistenciaReglas.CalcularMinutosTardanza(fechaHoraActual, horaProgramadaEntrada, configuracion.MinutosToleranciaEntrada);
+            var esEntradaTardia = minutosTardanza > 0;
+
             var nuevaAsistencia = new Asistencia
             {
                 IdEmpleado = empleado.IdEmpleado,
                 HoraEntrada = fechaHoraActual,
+                HoraProgramadaEntrada = horaProgramadaEntrada,
+                HoraProgramadaSalida = horaProgramadaSalida,
+                EsEntradaTardia = esEntradaTardia,
+                MinutosTardanza = minutosTardanza,
                 HoraSalida = null,
-                Observacion = null,
+                Observacion = esEntradaTardia ? "Entrada tardía registrada según horario asignado." : null,
                 Corregida = false,
                 FechaCreacion = fechaHoraActual
             };
 
-            await _context.Asistencias.AddAsync(
-                nuevaAsistencia,
-                cancellationToken);
-
+            await _context.Asistencias.AddAsync(nuevaAsistencia, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return new ResultadoMarcacionDto
@@ -95,18 +112,41 @@ public class MarcarAsistenciaHandler
                 IdAsistencia = nuevaAsistencia.IdAsistencia,
                 IdEmpleado = empleado.IdEmpleado,
                 CodigoEmpleado = empleado.CodigoEmpleado,
-                NombreEmpleado =
-                    $"{empleado.Nombres} {empleado.Apellidos}",
+                NombreEmpleado = $"{empleado.Nombres} {empleado.Apellidos}",
                 TipoMarcacion = "Entrada",
                 FechaHoraMarcacion = fechaHoraActual,
                 HoraEntrada = nuevaAsistencia.HoraEntrada,
                 HoraSalida = null,
-                Mensaje = "Entrada registrada correctamente."
+                HoraProgramadaEntrada = nuevaAsistencia.HoraProgramadaEntrada,
+                HoraProgramadaSalida = nuevaAsistencia.HoraProgramadaSalida,
+                EsEntradaTardia = nuevaAsistencia.EsEntradaTardia,
+                MinutosTardanza = nuevaAsistencia.MinutosTardanza,
+                Mensaje = esEntradaTardia ? "Entrada tardía registrada correctamente." : "Entrada registrada correctamente."
             };
         }
 
         asistenciaAbierta.HoraSalida = fechaHoraActual;
+        asistenciaAbierta.HoraProgramadaSalida = horaProgramadaSalida;
         asistenciaAbierta.FechaActualizacion = fechaHoraActual;
+
+        var minutosExtra = AsistenciaReglas.CalcularMinutosExtra(fechaHoraActual, horaProgramadaSalida);
+        if (minutosExtra > 0)
+        {
+            var horaExtra = new HoraExtra
+            {
+                IdEmpleado = empleado.IdEmpleado,
+                IdAsistencia = asistenciaAbierta.IdAsistencia,
+                Fecha = fechaHoraActual.Date,
+                MinutosDetectados = minutosExtra,
+                MinutosAprobados = 0,
+                Estado = EstadoHoraExtra.Pendiente,
+                Observacion = "Horas extra detectadas al registrar salida.",
+                Empleado = empleado,
+                Asistencia = asistenciaAbierta
+            };
+
+            await _context.HorasExtras.AddAsync(horaExtra, cancellationToken);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -115,13 +155,21 @@ public class MarcarAsistenciaHandler
             IdAsistencia = asistenciaAbierta.IdAsistencia,
             IdEmpleado = empleado.IdEmpleado,
             CodigoEmpleado = empleado.CodigoEmpleado,
-            NombreEmpleado =
-                $"{empleado.Nombres} {empleado.Apellidos}",
+            NombreEmpleado = $"{empleado.Nombres} {empleado.Apellidos}",
             TipoMarcacion = "Salida",
             FechaHoraMarcacion = fechaHoraActual,
             HoraEntrada = asistenciaAbierta.HoraEntrada,
             HoraSalida = asistenciaAbierta.HoraSalida,
-            Mensaje = "Salida registrada correctamente."
+            HoraProgramadaEntrada = asistenciaAbierta.HoraProgramadaEntrada,
+            HoraProgramadaSalida = asistenciaAbierta.HoraProgramadaSalida,
+            EsEntradaTardia = asistenciaAbierta.EsEntradaTardia,
+            MinutosTardanza = asistenciaAbierta.MinutosTardanza,
+            Mensaje = minutosExtra > 0 ? "Salida registrada correctamente. Se detectaron horas extra pendientes." : "Salida registrada correctamente."
         };
+    }
+
+    private static DateTime ObtenerHoraProgramada(DateTime fechaReferencia, TimeOnly horaProgramada)
+    {
+        return fechaReferencia.Date.AddHours(horaProgramada.Hour).AddMinutes(horaProgramada.Minute);
     }
 }

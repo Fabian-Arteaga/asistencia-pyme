@@ -24,6 +24,27 @@ namespace AsistenciaPyme.Application.Common.Interfaces
 
         DbSet<DeduccionPlanilla> DeduccionesPlanilla { get; }
 
+        DbSet<Departamento> Departamentos { get; }
+
+        DbSet<HorarioLaboral> HorariosLaborales { get; }
+
+        DbSet<DetallePlanilla> DetallesPlanilla { get; }
+
+        DbSet<ConceptoPlanilla> ConceptosPlanilla { get; }
+
+        DbSet<DetalleConceptoPlanilla> DetallesConceptoPlanilla { get; }
+
+        DbSet<HoraExtra> HorasExtras { get; }
+
+        DbSet<Embargo> Embargos { get; }
+
+        DbSet<ConfiguracionNomina> ConfiguracionesNomina { get; }
+
+        DbSet<EmpleadoDepartamentoHistorial> EmpleadoDepartamentoHistorials { get; }
+
+        DbSet<DispositivoMarcaje> DispositivosMarcaje { get; }
+
+        DbSet<VerificacionPresencia> VerificacionesPresencia { get; }
 
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);

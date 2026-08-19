@@ -10,6 +10,9 @@ namespace AsistenciaPyme.Domain.Entities
 
         public int IdPlanilla { get; set; }
 
+        // Transitional: associate deduction to detalle planilla when migrated
+        public int? IdDetallePlanilla { get; set; }
+
         public int IdTipoDeduccion { get; set; }
 
         public decimal ValorAplicado { get; set; }
@@ -23,5 +26,7 @@ namespace AsistenciaPyme.Domain.Entities
         public Planilla Planilla { get; set; } = null!;
 
         public TipoDeduccion TipoDeduccion { get; set; } = null!;
+
+        public DetallePlanilla? DetallePlanilla { get; set; }
     }
 }

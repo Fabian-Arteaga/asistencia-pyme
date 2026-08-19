@@ -1,0 +1,29 @@
+.panel-empleados {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.celda-acciones {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.formulario-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.campo-formulario--completo {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+    .formulario-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -29,6 +29,20 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
             builder.Property(a => a.HoraSalida)
                 .HasColumnName("hora_salida");
 
+            builder.Property(a => a.HoraProgramadaEntrada)
+                .HasColumnName("hora_programada_entrada");
+
+            builder.Property(a => a.HoraProgramadaSalida)
+                .HasColumnName("hora_programada_salida");
+
+            builder.Property(a => a.EsEntradaTardia)
+                .HasColumnName("es_entrada_tardia")
+                .HasDefaultValue(false);
+
+            builder.Property(a => a.MinutosTardanza)
+                .HasColumnName("minutos_tardanza")
+                .HasDefaultValue(0);
+
             builder.Property(a => a.Observacion)
                 .HasColumnName("observacion")
                 .HasMaxLength(300);

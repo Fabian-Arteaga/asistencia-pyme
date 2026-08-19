@@ -68,12 +68,49 @@ public class CrearEmpleadoHandler
                 "El PIN es obligatorio.");
         }
 
+        if (request.IdDepartamento.HasValue)
+        {
+            bool departamentoValido = await _context.Departamentos
+                .AnyAsync(d => d.IdDepartamento == request.IdDepartamento.Value && d.Activo, cancellationToken);
+
+            if (!departamentoValido)
+            {
+                throw new InvalidOperationException("El departamento seleccionado no existe o está inactivo.");
+            }
+        }
+
+        if (request.IdHorarioLaboral.HasValue)
+        {
+            bool horarioValido = await _context.HorariosLaborales
+                .AnyAsync(h => h.IdHorarioLaboral == request.IdHorarioLaboral.Value && h.Activo, cancellationToken);
+
+            if (!horarioValido)
+            {
+                throw new InvalidOperationException("El horario laboral seleccionado no existe o está inactivo.");
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.NumeroINSS))
+        {
+            string numeroInss = request.NumeroINSS.Trim();
+            bool inssDuplicado = await _context.Empleados
+                .AnyAsync(e => e.NumeroINSS != null && e.NumeroINSS == numeroInss, cancellationToken);
+
+            if (inssDuplicado)
+            {
+                throw new InvalidOperationException("Ya existe un empleado con ese número de INSS.");
+            }
+        }
+
         var empleado = new Empleado
         {
             IdCargo = request.IdCargo,
+            IdDepartamento = request.IdDepartamento,
+            IdHorarioLaboral = request.IdHorarioLaboral,
             CodigoEmpleado = codigoEmpleado,
             PinHash = _pinHasher.CrearHash(request.Pin),
             Identificacion = identificacion,
+            NumeroINSS = string.IsNullOrWhiteSpace(request.NumeroINSS) ? null : request.NumeroINSS.Trim(),
             Nombres = request.Nombres.Trim(),
             Apellidos = request.Apellidos.Trim(),
 
@@ -98,6 +135,16 @@ public class CrearEmpleadoHandler
         await _context.Empleados.AddAsync(
             empleado,
             cancellationToken);
+
+        if (empleado.IdDepartamento.HasValue)
+        {
+            _context.EmpleadoDepartamentoHistorials.Add(new EmpleadoDepartamentoHistorial
+            {
+                IdEmpleado = empleado.IdEmpleado,
+                IdDepartamento = empleado.IdDepartamento.Value,
+                FechaInicio = DateTime.UtcNow
+            });
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 

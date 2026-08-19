@@ -21,7 +21,7 @@ public class PlanillasController : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<PlanillaDto>> Generar(
-        [FromBody] GenerarPlanillaCommand command,
+        [FromBody] GenerarPlanillaDepartamentoCommand command,
         CancellationToken cancellationToken)
     {
         try
@@ -35,27 +35,18 @@ public class PlanillasController : ControllerBase
             {
                 return NotFound(new
                 {
-                    Mensaje =
-                        $"No se encontró el empleado con código " +
-                        $"{command.CodigoEmpleado}."
+                    Mensaje = "No se pudo generar la planilla."
                 });
             }
 
             return CreatedAtAction(
                 nameof(ObtenerPorId),
-                new
-                {
-                    idPlanilla =
-                        planilla.IdPlanilla
-                },
+                new { idPlanilla = planilla.IdPlanilla },
                 planilla);
         }
         catch (InvalidOperationException exception)
         {
-            return BadRequest(new
-            {
-                Mensaje = exception.Message
-            });
+            return Conflict(new { Mensaje = exception.Message });
         }
     }
 
@@ -125,6 +116,26 @@ public class PlanillasController : ControllerBase
         return Ok(planillas);
     }
 
+    [HttpGet("{idPlanilla:int}/detalle-empleado/{idEmpleado:int}")]
+    public async Task<ActionResult<DetallePlanillaEmpleadoDto>> ObtenerDetalleEmpleado(
+        int idPlanilla,
+        int idEmpleado,
+        CancellationToken cancellationToken)
+    {
+        var detalle = await _mediator.Send(new ObtenerDetallePlanillaEmpleadoQuery
+        {
+            IdPlanilla = idPlanilla,
+            IdEmpleado = idEmpleado
+        }, cancellationToken);
+
+        if (detalle is null)
+        {
+            return NotFound(new { Mensaje = "No se encontró el detalle de la planilla para ese empleado." });
+        }
+
+        return Ok(detalle);
+    }
+
     [HttpPatch("{idPlanilla:int}/estado")]
     public async Task<ActionResult<PlanillaDto>> CambiarEstado(
         int idPlanilla,
@@ -158,6 +169,126 @@ public class PlanillasController : ControllerBase
             {
                 Mensaje = exception.Message
             });
+        }
+    }
+
+    [HttpPost("{idPlanilla:int}/recalcular")]
+    public async Task<ActionResult<PlanillaDto>> Recalcular(
+        int idPlanilla,
+        [FromBody] RecalcularPlanillaCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.IdPlanilla = idPlanilla;
+
+        try
+        {
+            PlanillaDto? planilla = await _mediator.Send(command, cancellationToken);
+            if (planilla is null)
+            {
+                return NotFound(new { Mensaje = $"No se encontró la planilla con ID {idPlanilla}." });
+            }
+
+            return Ok(planilla);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new { Mensaje = exception.Message });
+        }
+    }
+
+    [HttpPost("{idPlanilla:int}/enviar-revision")]
+    public async Task<ActionResult<PlanillaDto>> EnviarRevision(
+        int idPlanilla,
+        [FromBody] EnviarPlanillaRevisionCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.IdPlanilla = idPlanilla;
+
+        try
+        {
+            PlanillaDto? planilla = await _mediator.Send(command, cancellationToken);
+            if (planilla is null)
+            {
+                return NotFound(new { Mensaje = $"No se encontró la planilla con ID {idPlanilla}." });
+            }
+
+            return Ok(planilla);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new { Mensaje = exception.Message });
+        }
+    }
+
+    [HttpPost("{idPlanilla:int}/cerrar")]
+    public async Task<ActionResult<PlanillaDto>> Cerrar(
+        int idPlanilla,
+        [FromBody] CerrarPlanillaCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.IdPlanilla = idPlanilla;
+
+        try
+        {
+            PlanillaDto? planilla = await _mediator.Send(command, cancellationToken);
+            if (planilla is null)
+            {
+                return NotFound(new { Mensaje = $"No se encontró la planilla con ID {idPlanilla}." });
+            }
+
+            return Ok(planilla);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new { Mensaje = exception.Message });
+        }
+    }
+
+    [HttpPost("{idPlanilla:int}/pagar")]
+    public async Task<ActionResult<PlanillaDto>> MarcarPagada(
+        int idPlanilla,
+        [FromBody] MarcarPlanillaPagadaCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.IdPlanilla = idPlanilla;
+
+        try
+        {
+            PlanillaDto? planilla = await _mediator.Send(command, cancellationToken);
+            if (planilla is null)
+            {
+                return NotFound(new { Mensaje = $"No se encontró la planilla con ID {idPlanilla}." });
+            }
+
+            return Ok(planilla);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new { Mensaje = exception.Message });
+        }
+    }
+
+    [HttpPost("{idPlanilla:int}/anular")]
+    public async Task<ActionResult<PlanillaDto>> Anular(
+        int idPlanilla,
+        [FromBody] AnularPlanillaCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.IdPlanilla = idPlanilla;
+
+        try
+        {
+            PlanillaDto? planilla = await _mediator.Send(command, cancellationToken);
+            if (planilla is null)
+            {
+                return NotFound(new { Mensaje = $"No se encontró la planilla con ID {idPlanilla}." });
+            }
+
+            return Ok(planilla);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new { Mensaje = exception.Message });
         }
     }
 }

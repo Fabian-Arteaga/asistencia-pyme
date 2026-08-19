@@ -23,15 +23,22 @@ public class ObtenerEmpleadosHandler
     {
         return await _context.Empleados
             .AsNoTracking()
+            .Include(e => e.Departamento)
+            .Include(e => e.HorarioLaboral)
             .OrderBy(e => e.Nombres)
             .ThenBy(e => e.Apellidos)
             .Select(e => new EmpleadoDto
             {
                 IdEmpleado = e.IdEmpleado,
                 IdCargo = e.IdCargo,
+                IdDepartamento = e.IdDepartamento,
+                IdHorarioLaboral = e.IdHorarioLaboral,
                 NombreCargo = e.Cargo.Nombre,
+                NombreDepartamento = e.Departamento != null ? e.Departamento.Nombre : null,
+                NombreHorarioLaboral = e.HorarioLaboral != null ? e.HorarioLaboral.Nombre : null,
                 CodigoEmpleado = e.CodigoEmpleado,
                 Identificacion = e.Identificacion,
+                NumeroINSS = e.NumeroINSS,
                 Nombres = e.Nombres,
                 Apellidos = e.Apellidos,
                 Telefono = e.Telefono,

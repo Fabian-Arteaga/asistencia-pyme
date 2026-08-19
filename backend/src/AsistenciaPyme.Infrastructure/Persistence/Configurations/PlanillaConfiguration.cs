@@ -19,6 +19,9 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
                 .HasColumnName("id_planilla")
                 .ValueGeneratedOnAdd();
 
+            builder.Property(p => p.IdDepartamento)
+                .HasColumnName("id_departamento");
+
             builder.Property(p => p.IdEmpleado)
                 .HasColumnName("id_empleado");
 
@@ -37,22 +40,42 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
 
             builder.Property(p => p.SalarioBasePeriodo)
                 .HasColumnName("salario_base_periodo")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
                 .IsRequired();
 
             builder.Property(p => p.IngresosAdicionales)
                 .HasColumnName("ingresos_adicionales")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
+                .HasDefaultValue(0m);
+
+            builder.Property(p => p.TotalSalarioBase)
+                .HasColumnName("total_salario_base")
+                .HasPrecision(18, 2)
+                .HasDefaultValue(0m);
+
+            builder.Property(p => p.TotalHorasExtras)
+                .HasColumnName("total_horas_extras")
+                .HasPrecision(18, 2)
+                .HasDefaultValue(0m);
+
+            builder.Property(p => p.TotalIngresos)
+                .HasColumnName("total_ingresos")
+                .HasPrecision(18, 2)
                 .HasDefaultValue(0m);
 
             builder.Property(p => p.TotalDeducciones)
                 .HasColumnName("total_deducciones")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
+                .HasDefaultValue(0m);
+
+            builder.Property(p => p.TotalNeto)
+                .HasColumnName("total_neto")
+                .HasPrecision(18, 2)
                 .HasDefaultValue(0m);
 
             builder.Property(p => p.SalarioNeto)
                 .HasColumnName("salario_neto")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
                 .HasDefaultValue(0m);
 
             builder.Property(p => p.Estado)
@@ -72,10 +95,15 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(p => new
             {
-                p.IdEmpleado,
+                p.IdDepartamento,
                 p.FechaInicioPeriodo,
                 p.FechaFinPeriodo
             }).IsUnique();
+
+            builder.HasOne(p => p.Departamento)
+                .WithMany(d => d.Planillas)
+                .HasForeignKey(p => p.IdDepartamento)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(p => p.Empleado)
                 .WithMany(e => e.Planillas)

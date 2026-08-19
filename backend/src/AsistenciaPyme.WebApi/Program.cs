@@ -1,7 +1,10 @@
 using AsistenciaPyme.Application;
+using AsistenciaPyme.Domain.Entities;
 using AsistenciaPyme.Infrastructure;
+using AsistenciaPyme.Infrastructure.Persistence;
 using AsistenciaPyme.WebApi.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Security.Claims;
@@ -141,7 +144,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {

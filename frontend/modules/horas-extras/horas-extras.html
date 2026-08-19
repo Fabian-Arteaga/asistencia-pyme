@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AsistenciaPyme | Horas extra</title>
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="./horas-extras.css" />
+  </head>
+  <body>
+    <div id="sidebarContainer"></div>
+    <div id="topbarContainer"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Horas extra pendientes</h2>
+            <p>Revise, apruebe o rechace horas extra por empleado.</p>
+          </div>
+        </section>
+
+        <section class="panel-horas-extras">
+          <div id="mensajeHoraExtra" class="mensaje" role="alert" aria-live="polite"></div>
+
+          <div id="contenedorTabla" class="tabla-contenedor">
+            <table class="tabla-principal">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Fecha</th>
+                  <th>Hora salida programada</th>
+                  <th>Hora salida real</th>
+                  <th>Minutos detectados</th>
+                  <th>Minutos aprobados</th>
+                  <th>Estado</th>
+                  <th>Observación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaHorasExtrasBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">No hay horas extra pendientes.</div>
+        </section>
+      </div>
+    </main>
+
+    <div id="modalHoraExtra" class="modal modal--oculto" aria-hidden="true">
+      <div class="modal__fondo"></div>
+      <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalHoraExtra">
+        <div class="modal__encabezado">
+          <h3 id="tituloModalHoraExtra">Aprobar hora extra</h3>
+          <button type="button" id="btnCerrarModalHoraExtra" class="modal__cerrar" aria-label="Cerrar">×</button>
+        </div>
+
+        <form id="formHoraExtraAccion" novalidate>
+          <input type="hidden" id="idHoraExtraAccion" />
+
+          <div class="formulario-grid">
+            <div class="campo-formulario campo-formulario--completo">
+              <label for="minutosAprobados">Minutos aprobados</label>
+              <input type="number" id="minutosAprobados" min="1" step="1" required />
+            </div>
+
+            <div class="campo-formulario campo-formulario--completo">
+              <label for="observacionHoraExtra">Observación</label>
+              <textarea id="observacionHoraExtra" rows="3" placeholder="Observación opcional"></textarea>
+            </div>
+          </div>
+
+          <div class="acciones-formulario">
+            <button type="button" id="btnCancelarHoraExtra" class="boton boton--secundario">Cancelar</button>
+            <button type="submit" id="btnGuardarHoraExtra" class="boton boton--primario">Aprobar</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./horas-extras.js"></script>
+  </body>
+</html>

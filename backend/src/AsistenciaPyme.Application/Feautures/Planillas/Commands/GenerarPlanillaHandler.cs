@@ -263,14 +263,11 @@ public class GenerarPlanillaHandler
             IngresosAdicionales =
                 request.IngresosAdicionales,
 
-            TotalDeducciones =
-                totalDeducciones,
-
             SalarioNeto =
                 salarioNeto,
 
             Estado =
-                EstadoPlanilla.Generada,
+                EstadoPlanilla.Calculada,
 
             FechaCreacion =
                 fechaActual,
@@ -297,90 +294,50 @@ public class GenerarPlanillaHandler
         await _context.SaveChangesAsync(
             cancellationToken);
 
+        var detalle = new DetallePlanillaDto
+        {
+            IdDetallePlanilla = 0,
+            IdEmpleado = empleado.IdEmpleado,
+            CodigoEmpleado = empleado.CodigoEmpleado,
+            NombreEmpleado = empleado.Nombres + " " + empleado.Apellidos,
+            NumeroINSS = empleado.NumeroINSS,
+            Cargo = empleado.Cargo?.Nombre ?? string.Empty,
+            Departamento = empleado.Departamento?.Nombre ?? string.Empty,
+            SalarioBase = planilla.SalarioBasePeriodo,
+            DiasLaborados = 0,
+            MinutosLaborados = 0,
+            CantidadTardanzas = 0,
+            MinutosTardanza = 0,
+            DescuentoTardanza = 0m,
+            MinutosExtrasDetectados = 0,
+            MinutosExtrasAprobados = 0,
+            MontoHorasExtras = 0m,
+            VacacionesAcumuladasPeriodo = 0m,
+            SaldoVacaciones = 0m,
+            TotalIngresos = salarioBruto,
+            TotalDeducciones = planilla.TotalDeducciones,
+            SalarioNeto = planilla.SalarioNeto,
+            IndemnizacionProyectada = 0m
+        };
+
         return new PlanillaDto
         {
-            IdPlanilla =
-                planilla.IdPlanilla,
-
-            IdEmpleado =
-                empleado.IdEmpleado,
-
-            CodigoEmpleado =
-                empleado.CodigoEmpleado,
-
-            NombreEmpleado =
-                empleado.Nombres + " " +
-                empleado.Apellidos,
-
-            IdAdministrador =
-                administrador.IdAdministrador,
-
-            NombreAdministrador =
-                administrador.Nombres + " " +
-                administrador.Apellidos,
-
-            FechaInicioPeriodo =
-                planilla.FechaInicioPeriodo,
-
-            FechaFinPeriodo =
-                planilla.FechaFinPeriodo,
-
-            SalarioBasePeriodo =
-                planilla.SalarioBasePeriodo,
-
-            IngresosAdicionales =
-                planilla.IngresosAdicionales,
-
-            SalarioBruto =
-                salarioBruto,
-
-            TotalDeducciones =
-                planilla.TotalDeducciones,
-
-            SalarioNeto =
-                planilla.SalarioNeto,
-
-            Estado =
-                planilla.Estado,
-
-            FechaCreacion =
-                planilla.FechaCreacion,
-
-            FechaActualizacion =
-                planilla.FechaActualizacion,
-
-            Deducciones =
-                deduccionesPreparadas
-                    .Select(item =>
-                        new DeduccionPlanillaDto
-                        {
-                            IdDeduccionPlanilla =
-                                item.Entidad
-                                    .IdDeduccionPlanilla,
-
-                            IdTipoDeduccion =
-                                item.Tipo
-                                    .IdTipoDeduccion,
-
-                            NombreTipoDeduccion =
-                                item.Tipo.Nombre,
-
-                            TipoCalculo =
-                                item.Tipo.TipoCalculo,
-
-                            ValorAplicado =
-                                item.Entidad
-                                    .ValorAplicado,
-
-                            MontoCalculado =
-                                item.Entidad
-                                    .MontoCalculado,
-
-                            Observacion =
-                                item.Entidad
-                                    .Observacion
-                        })
-                    .ToList()
+            IdPlanilla = planilla.IdPlanilla,
+            IdDepartamento = null,
+            NombreDepartamento = null,
+            FechaInicioPeriodo = planilla.FechaInicioPeriodo,
+            FechaFinPeriodo = planilla.FechaFinPeriodo,
+            CantidadEmpleados = 1,
+            TotalSalarioBase = planilla.SalarioBasePeriodo,
+            TotalHorasExtras = 0m,
+            TotalIngresos = salarioBruto,
+            TotalDeducciones = planilla.TotalDeducciones,
+            TotalNeto = planilla.SalarioNeto,
+            Estado = planilla.Estado,
+            FechaGeneracion = planilla.FechaGeneracion,
+            FechaCreacion = planilla.FechaCreacion,
+            FechaActualizacion = planilla.FechaActualizacion,
+            Detalles = new List<DetallePlanillaDto> { detalle }
         };
     }
 }

@@ -87,6 +87,30 @@ function renderizarSidebar() {
                 </a>
 
                 <a
+                    href="../../modules/departamentos/departamentos.html"
+                    class="menu-link"
+                    data-menu="departamentos"
+                >
+                    <span class="menu-link__icono">
+                        D
+                    </span>
+
+                    <span>Departamentos</span>
+                </a>
+
+                <a
+                    href="../../modules/horarios-laborales/horarios-laborales.html"
+                    class="menu-link"
+                    data-menu="horarios"
+                >
+                    <span class="menu-link__icono">
+                        H
+                    </span>
+
+                    <span>Horarios</span>
+                </a>
+
+                <a
                     href="../asistencias/asistencias.html"
                     class="menu-link"
                     data-menu="asistencias"
@@ -130,10 +154,46 @@ function renderizarSidebar() {
                     <span class="menu-link__icono">
                         P
                     </span>
-
+ 
                     <span>Planillas</span>
                 </a>
-
+ 
+                <a
+                    href="../horas-extras/horas-extras.html"
+                    class="menu-link"
+                    data-menu="horas-extras"
+                >
+                    <span class="menu-link__icono">
+                        HE
+                    </span>
+ 
+                    <span>Horas extra</span>
+                </a>
+ 
+                <a
+                    href="../embargos/embargos.html"
+                    class="menu-link"
+                    data-menu="embargos"
+                >
+                    <span class="menu-link__icono">
+                        E
+                    </span>
+ 
+                    <span>Embargos</span>
+                </a>
+ 
+                <a
+                    href="../configuracion-nomina/configuracion-nomina.html"
+                    class="menu-link"
+                    data-menu="configuracion-nomina"
+                >
+                    <span class="menu-link__icono">
+                        CN
+                    </span>
+ 
+                    <span>Configuración nómina</span>
+                </a>
+ 
                 <a
                     href="../administradores/administradores.html"
                     class="menu-link"

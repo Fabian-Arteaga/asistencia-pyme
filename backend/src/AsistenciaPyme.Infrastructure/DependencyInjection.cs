@@ -48,6 +48,9 @@ public static class DependencyInjection
             IJwtTokenGenerator,
             JwtTokenGenerator>();
 
+        services.AddScoped<AsistenciaPyme.Application.Common.Interfaces.ICalculadorHorasExtras, Persistence.CalculadorHorasExtras>();
+        services.AddScoped<AsistenciaPyme.Application.Common.Interfaces.ICalculadorIndemnizacion, Persistence.CalculadorIndemnizacion>();
+
         return services;
     }
 }

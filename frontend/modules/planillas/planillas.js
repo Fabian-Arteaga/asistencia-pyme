@@ -14,8 +14,15 @@ import {
     generarPlanilla,
     cambiarEstadoPlanilla,
     obtenerEmpleadosParaPlanilla,
-    obtenerTiposDeduccionParaPlanilla
+    obtenerTiposDeduccionParaPlanilla,
+    recalcularPlanilla,
+    enviarPlanillaRevision,
+    cerrarPlanilla,
+    pagarPlanilla,
+    anularPlanilla
 } from "../planillas/planillas.services.js";
+
+import { obtenerDepartamentos } from "../planillas/planillas.services.js";
 
 
 const ESTADOS_PLANILLA = {
@@ -129,9 +136,9 @@ const formPlanilla =
         "formPlanilla"
     );
 
-const selectEmpleadoPlanilla =
+const selectDepartamentoPlanilla =
     obtenerElemento(
-        "empleadoPlanilla"
+        "departamentoPlanilla"
     );
 
 const inputFechaInicio =
@@ -322,7 +329,7 @@ async function inicializarModulo() {
     configurarEventos();
 
     await Promise.all([
-        cargarEmpleados(),
+        cargarDepartamentos(),
         cargarTiposDeduccion()
     ]);
 
@@ -375,9 +382,9 @@ function configurarEventos() {
         guardarPlanilla
     );
 
-    selectEmpleadoPlanilla.addEventListener(
+    selectDepartamentoPlanilla.addEventListener(
         "change",
-        manejarCambioEmpleado
+            manejarCambioDepartamento
     );
 
     inputFechaInicio.addEventListener(
@@ -525,7 +532,7 @@ function llenarSelectEmpleados() {
         ${opciones}
     `;
 
-    selectEmpleadoPlanilla.innerHTML = `
+    selectDepartamentoPlanilla.innerHTML = `
         <option value="">
             Seleccione un empleado
         </option>
@@ -534,6 +541,30 @@ function llenarSelectEmpleados() {
     `;
 }
 
+
+let departamentos = [];
+
+async function cargarDepartamentos() {
+    try {
+        departamentos = await obtenerDepartamentos();
+
+        departamentos.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
+
+        const opciones = departamentos.map(d => `
+            <option value="${d.idDepartamento}">${d.nombre}</option>
+        `).join('');
+
+        const selectDepartamento = document.getElementById('departamentoPlanilla');
+        if (selectDepartamento) {
+            selectDepartamento.innerHTML = `
+                <option value="">Seleccione un departamento</option>
+                ${opciones}
+            `;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 async function cargarTiposDeduccion() {
     try {
@@ -784,6 +815,51 @@ function renderizarPlanillas(
                         >
                             Estado
                         </button>
+
+                        <button
+                            type="button"
+                            class="boton-tabla"
+                            data-accion="recalcular"
+                            data-id="${planilla.idPlanilla}"
+                        >
+                            Recalcular
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boton-tabla"
+                            data-accion="revision"
+                            data-id="${planilla.idPlanilla}"
+                        >
+                            Revisar
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boton-tabla"
+                            data-accion="cerrar"
+                            data-id="${planilla.idPlanilla}"
+                        >
+                            Cerrar
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boton-tabla"
+                            data-accion="pagar"
+                            data-id="${planilla.idPlanilla}"
+                        >
+                            Pagar
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boton-tabla boton-tabla--anular"
+                            data-accion="anular"
+                            data-id="${planilla.idPlanilla}"
+                        >
+                            Anular
+                        </button>
                     </div>
                 </td>
             `;
@@ -831,6 +907,56 @@ function manejarAccionTabla(
         abrirModalEstado(
             idPlanilla
         );
+        return;
+    }
+
+    if (accion === "recalcular") {
+        ejecutarAccionPlanilla(idPlanilla, "recalcular");
+        return;
+    }
+
+    if (accion === "revision") {
+        ejecutarAccionPlanilla(idPlanilla, "revision");
+        return;
+    }
+
+    if (accion === "cerrar") {
+        ejecutarAccionPlanilla(idPlanilla, "cerrar");
+        return;
+    }
+
+    if (accion === "pagar") {
+        ejecutarAccionPlanilla(idPlanilla, "pagar");
+        return;
+    }
+
+    if (accion === "anular") {
+        ejecutarAccionPlanilla(idPlanilla, "anular");
+    }
+}
+
+async function ejecutarAccionPlanilla(idPlanilla, accion) {
+    const administrador = obtenerAdministrador();
+    const idAdministrador = administrador?.idAdministrador ?? administrador?.IdAdministrador ?? 0;
+
+    try {
+        if (accion === "recalcular") {
+            await recalcularPlanilla(idPlanilla, idAdministrador);
+        } else if (accion === "revision") {
+            await enviarPlanillaRevision(idPlanilla, idAdministrador);
+        } else if (accion === "cerrar") {
+            await cerrarPlanilla(idPlanilla, idAdministrador);
+        } else if (accion === "pagar") {
+            await pagarPlanilla(idPlanilla, idAdministrador);
+        } else if (accion === "anular") {
+            await anularPlanilla(idPlanilla, idAdministrador, "Anulación desde el frontend");
+        }
+
+        mostrarMensajePrincipal("Cambio de estado aplicado correctamente.", "success");
+        await cargarPlanillas(false);
+    } catch (error) {
+        console.error(error);
+        mostrarMensajePrincipal(error?.message || "No fue posible ejecutar la acción requerida.", "error");
     }
 }
 
@@ -867,37 +993,15 @@ function abrirModalNuevaPlanilla() {
         modalPlanilla
     );
 
-    selectEmpleadoPlanilla.focus();
+    selectDepartamentoPlanilla.focus();
 }
 
-function manejarCambioEmpleado() {
-    const empleado =
-        obtenerEmpleadoSeleccionado();
+function manejarCambioDepartamento() {
+    const departamento = obtenerDepartamentoSeleccionado();
 
-    inputSalarioBase.value =
-        formatearMoneda(
-            empleado?.salarioBase ??
-            0
-        );
-
-    if (
-        empleado?.fechaContratacion &&
-        inputFechaInicio.value <
-        empleado.fechaContratacion
-    ) {
-        inputFechaInicio.value =
-            empleado.fechaContratacion;
-
-        inputFechaFin.min =
-            empleado.fechaContratacion;
-
-        if (
-            inputFechaFin.value <
-            empleado.fechaContratacion
-        ) {
-            inputFechaFin.value =
-                empleado.fechaContratacion;
-        }
+    // No salary preview for department-level generation. Just ensure dates are valid.
+    if (departamento) {
+        // Potential future behavior: adjust defaults based on department
     }
 
     recalcularResumen();
@@ -1245,13 +1349,10 @@ function construirOpcionesTipos(
 
 
 function recalcularResumen() {
-    const empleado =
-        obtenerEmpleadoSeleccionado();
+    const departamento = obtenerDepartamentoSeleccionado();
 
-    const salarioBase =
-        convertirNumeroNoNegativo(
-            empleado?.salarioBase
-        );
+    // No per-employee salary preview in department mode
+    const salarioBase = 0;
 
     const ingresosAdicionales =
         convertirNumeroNoNegativo(
@@ -1351,26 +1452,14 @@ async function guardarPlanilla(
 
     limpiarMensajeFormulario();
 
-    const empleado =
-        obtenerEmpleadoSeleccionado();
+    const departamento = obtenerDepartamentoSeleccionado();
 
     const datos = {
-        codigoEmpleado:
-            selectEmpleadoPlanilla.value,
-
-        idAdministrador:
-            obtenerIdAdministradorActual(),
-
-        fechaInicioPeriodo:
-            inputFechaInicio.value,
-
-        fechaFinPeriodo:
-            inputFechaFin.value,
-
-        ingresosAdicionales:
-            convertirNumeroNoNegativo(
-                inputIngresos.value
-            ),
+        idDepartamento: Number(selectDepartamentoPlanilla.value || 0),
+        idAdministrador: obtenerIdAdministradorActual(),
+        fechaInicioPeriodo: inputFechaInicio.value,
+        fechaFinPeriodo: inputFechaFin.value,
+        ingresosAdicionales: convertirNumeroNoNegativo(inputIngresos.value),
 
         deducciones:
             deduccionesFormulario.map(
@@ -1442,14 +1531,14 @@ async function guardarPlanilla(
 
 function validarPlanilla(
     datos,
-    empleado
+    departamento
 ) {
-    if (!datos.codigoEmpleado) {
-        return "Debe seleccionar un empleado.";
+    if (!Number.isInteger(datos.idDepartamento) || datos.idDepartamento <= 0) {
+        return "Debe seleccionar un departamento.";
     }
 
-    if (!empleado) {
-        return "No se encontró la información del empleado.";
+    if (!departamento) {
+        return "No se encontró la información del departamento.";
     }
 
     if (
@@ -1486,124 +1575,17 @@ function validarPlanilla(
         );
     }
 
-    if (
-        empleado.fechaContratacion &&
-        datos.fechaInicioPeriodo <
-        empleado.fechaContratacion
-    ) {
-        return (
-            "El período no puede iniciar antes de " +
-            "la fecha de contratación del empleado."
-        );
-    }
-
-    if (
-        empleado.salarioBase <= 0
-    ) {
-        return (
-            "El empleado debe tener un salario base " +
-            "mayor que cero."
-        );
-    }
-
-    const idsDeducciones =
-        datos.deducciones.map(
-            item =>
-                Number(
-                    item.idTipoDeduccion
-                )
-        );
-
-    if (
-        new Set(idsDeducciones).size !==
-        idsDeducciones.length
-    ) {
-        return (
-            "No puede aplicar dos veces el mismo " +
-            "tipo de deducción."
-        );
-    }
-
-    for (
-        const deduccion of
-        datos.deducciones
-    ) {
-        const tipo =
-            obtenerTipoDeduccion(
-                deduccion.idTipoDeduccion
-            );
-
-        if (!tipo) {
-            return (
-                "Seleccione un tipo de deducción válido."
-            );
-        }
-
-        if (
-            deduccion.valorAplicado < 0
-        ) {
-            return (
-                "El valor de una deducción " +
-                "no puede ser negativo."
-            );
-        }
-
-        if (
-            esTipoPorcentaje(
-                tipo.tipoCalculo
-            ) &&
-            deduccion.valorAplicado > 100
-        ) {
-            return (
-                `La deducción "${tipo.nombre}" ` +
-                "no puede superar el 100%."
-            );
-        }
-    }
-
-    const salarioBruto =
-        empleado.salarioBase +
-        datos.ingresosAdicionales;
-
-    const totalDeducciones =
-        deduccionesFormulario.reduce(
-            (
-                total,
-                deduccion
-            ) =>
-                total +
-                calcularMontoDeduccion(
-                    deduccion,
-                    salarioBruto
-                ),
-            0
-        );
-
-    if (
-        totalDeducciones >
-        salarioBruto
-    ) {
-        return (
-            "El total de deducciones no puede " +
-            "superar el salario bruto."
-        );
-    }
-
     const existeDuplicada =
         planillas.some(
             planilla =>
-                planilla.codigoEmpleado ===
-                    datos.codigoEmpleado &&
-                planilla.fechaInicioPeriodo ===
-                    datos.fechaInicioPeriodo &&
-                planilla.fechaFinPeriodo ===
-                    datos.fechaFinPeriodo
+                planilla.idDepartamento === datos.idDepartamento &&
+                planilla.fechaInicioPeriodo === datos.fechaInicioPeriodo &&
+                planilla.fechaFinPeriodo === datos.fechaFinPeriodo
         );
 
     if (existeDuplicada) {
         return (
-            "Ya existe una planilla para ese empleado " +
-            "y el mismo período."
+            "Ya existe una planilla para ese departamento y periodo."
         );
     }
 
@@ -2079,11 +2061,9 @@ function obtenerPayloadToken(
     }
 }
 
-function obtenerEmpleadoSeleccionado() {
-    return empleados.find(
-        empleado =>
-            empleado.codigoEmpleado ===
-            selectEmpleadoPlanilla.value
+function obtenerDepartamentoSeleccionado() {
+    return departamentos.find(
+        d => Number(d.idDepartamento) === Number(selectDepartamentoPlanilla.value)
     ) ?? null;
 }
 

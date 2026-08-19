@@ -21,6 +21,12 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
             builder.Property(e => e.IdCargo)
                 .HasColumnName("id_cargo");
 
+            builder.Property(e => e.IdDepartamento)
+                .HasColumnName("id_departamento");
+
+            builder.Property(e => e.IdHorarioLaboral)
+                .HasColumnName("id_horario_laboral");
+
             builder.Property(e => e.CodigoEmpleado)
                 .HasColumnName("codigo_empleado")
                 .HasMaxLength(20)
@@ -73,7 +79,7 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
 
             builder.Property(e => e.SalarioBase)
                 .HasColumnName("salario_base")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
                 .IsRequired();
 
             builder.Property(e => e.Estado)
@@ -92,6 +98,20 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
                 .WithMany(c => c.Empleados)
                 .HasForeignKey(e => e.IdCargo)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.Departamento)
+                .WithMany(d => d.Empleados)
+                .HasForeignKey(e => e.IdDepartamento)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.HorarioLaboral)
+                .WithMany(h => h.Empleados)
+                .HasForeignKey(e => e.IdHorarioLaboral)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(e => e.NumeroINSS)
+                .IsUnique()
+                .HasFilter("\"NumeroINSS\" IS NOT NULL");
         }
     }
 }

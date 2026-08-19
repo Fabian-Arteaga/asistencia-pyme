@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AsistenciaPyme | Embargos</title>
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="./embargos.css" />
+  </head>
+  <body>
+    <div id="sidebarContainer"></div>
+    <div id="topbarContainer"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Embargos</h2>
+            <p>Gestione embargos activos e históricos por empleado.</p>
+          </div>
+          <button type="button" id="btnNuevoEmbargo" class="boton boton--primario">Nuevo embargo</button>
+        </section>
+
+        <section class="panel-embargos">
+          <div id="mensajeEmbargos" class="mensaje" role="alert" aria-live="polite"></div>
+
+          <div class="acciones-superiores">
+            <button type="button" id="btnActualizarEmbargos" class="boton boton--secundario">Actualizar</button>
+          </div>
+
+          <div id="contenedorTabla" class="tabla-contenedor">
+            <table class="tabla-principal">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Tipo de cálculo</th>
+                  <th>Monto</th>
+                  <th>Porcentaje</th>
+                  <th>Saldo pendiente</th>
+                  <th>Fecha inicio</th>
+                  <th>Fecha fin</th>
+                  <th>Estado</th>
+                  <th>Referencia</th>
+                  <th>Observación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaEmbargosBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">No hay embargos registrados.</div>
+        </section>
+      </div>
+    </main>
+
+    <div id="modalEmbargo" class="modal modal--oculto" aria-hidden="true">
+      <div class="modal__fondo"></div>
+      <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalEmbargo">
+        <div class="modal__encabezado">
+          <h3 id="tituloModalEmbargo">Nuevo embargo</h3>
+          <button type="button" id="btnCerrarModalEmbargo" class="modal__cerrar" aria-label="Cerrar">×</button>
+        </div>
+
+        <form id="formEmbargo" novalidate>
+          <input type="hidden" id="idEmbargo" />
+
+          <div class="formulario-grid">
+            <div class="campo-formulario">
+              <label for="idEmpleado">Empleado</label>
+              <select id="idEmpleado" required></select>
+            </div>
+
+            <div class="campo-formulario">
+              <label for="tipoCalculo">Tipo de cálculo</label>
+              <select id="tipoCalculo" required>
+                <option value="1">Porcentaje</option>
+                <option value="2">Monto fijo</option>
+              </select>
+            </div>
+
+            <div class="campo-formulario">
+              <label for="monto">Monto</label>
+              <input type="number" id="monto" min="0" step="0.01" />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="porcentaje">Porcentaje</label>
+              <input type="number" id="porcentaje" min="0" max="100" step="0.01" />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="saldoPendiente">Saldo pendiente</label>
+              <input type="number" id="saldoPendiente" min="0" step="0.01" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="referencia">Referencia</label>
+              <input type="text" id="referencia" maxlength="120" />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="fechaInicio">Fecha inicio</label>
+              <input type="date" id="fechaInicio" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="fechaFin">Fecha fin</label>
+              <input type="date" id="fechaFin" />
+            </div>
+
+            <div class="campo-formulario campo-formulario--completo">
+              <label for="observacion">Observación</label>
+              <textarea id="observacion" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="acciones-formulario">
+            <button type="button" id="btnCancelarEmbargo" class="boton boton--secundario">Cancelar</button>
+            <button type="submit" id="btnGuardarEmbargo" class="boton boton--primario">Guardar</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./embargos.js"></script>
+  </body>
+</html>

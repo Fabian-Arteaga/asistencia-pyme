@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AsistenciaPyme | Configuración de nómina</title>
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="./configuracion-nomina.css" />
+  </head>
+  <body>
+    <div id="sidebarContainer"></div>
+    <div id="topbarContainer"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Configuración de nómina</h2>
+            <p>Administre los valores que regulan horas extra, tardanzas, vacaciones y tasa de INSS.</p>
+          </div>
+        </section>
+
+        <section class="panel-configuracion-nomina">
+          <div id="mensajeConfiguracionNomina" class="mensaje" role="alert" aria-live="polite"></div>
+
+          <form id="formConfiguracionNomina" novalidate>
+            <div class="formulario-grid">
+              <div class="campo-formulario">
+                <label for="minutosToleranciaEntrada">Minutos de tolerancia de entrada</label>
+                <input type="number" id="minutosToleranciaEntrada" min="0" step="1" required />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="multiplicadorHoraExtra">Multiplicador hora extra</label>
+                <input type="number" id="multiplicadorHoraExtra" min="0" step="0.01" required />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="diasVacacionesPorMes">Días de vacaciones por mes</label>
+                <input type="number" id="diasVacacionesPorMes" min="0" step="0.01" required />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="diasBaseProrrateoVacaciones">Días base de prorrateo vacaciones</label>
+                <input type="number" id="diasBaseProrrateoVacaciones" min="1" step="1" required />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="politicaDescuentoTardanza">Política de descuento por tardanza</label>
+                <input type="number" id="politicaDescuentoTardanza" min="0" step="1" required />
+              </div>
+
+              <div class="campo-formulario">
+                <label for="minutosMaximosVerificacionDepartamento">Minutos máximos de verificación por departamento</label>
+                <input type="number" id="minutosMaximosVerificacionDepartamento" min="0" step="1" required />
+              </div>
+
+              <div class="campo-formulario campo-formulario--completo">
+                <label for="tasaINSS">Tasa INSS</label>
+                <input type="number" id="tasaINSS" min="0" step="0.01" placeholder="Dejar vacío si no aplica" />
+              </div>
+            </div>
+
+            <div class="acciones-formulario">
+              <button type="submit" id="btnGuardarConfiguracionNomina" class="boton boton--primario">Guardar cambios</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="./configuracion-nomina.js"></script>
+  </body>
+</html>

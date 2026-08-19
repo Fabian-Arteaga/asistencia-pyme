@@ -22,17 +22,20 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
             builder.Property(d => d.IdPlanilla)
                 .HasColumnName("id_planilla");
 
+            builder.Property(d => d.IdDetallePlanilla)
+                .HasColumnName("id_detalle_planilla");
+
             builder.Property(d => d.IdTipoDeduccion)
                 .HasColumnName("id_tipo_deduccion");
 
             builder.Property(d => d.ValorAplicado)
                 .HasColumnName("valor_aplicado")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
                 .IsRequired();
 
             builder.Property(d => d.MontoCalculado)
                 .HasColumnName("monto_calculado")
-                .HasPrecision(12, 2)
+                .HasPrecision(18, 2)
                 .IsRequired();
 
             builder.Property(d => d.Observacion)
@@ -54,12 +57,15 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
                 .HasForeignKey(d => d.IdPlanilla)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(d => d.DetallePlanilla)
+                .WithMany()
+                .HasForeignKey(d => d.IdDetallePlanilla)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasOne(d => d.TipoDeduccion)
                 .WithMany(t => t.DeduccionesPlanilla)
                 .HasForeignKey(d => d.IdTipoDeduccion)
                 .OnDelete(DeleteBehavior.Restrict);
         }
-
-
     }
 }

@@ -22,6 +22,14 @@ namespace AsistenciaPyme.Application.Feautures.Asistencias.DTOs
 
         public DateTime? HoraSalida { get; set; }
 
+        public DateTime? HoraProgramadaEntrada { get; set; }
+
+        public DateTime? HoraProgramadaSalida { get; set; }
+
+        public bool EsEntradaTardia { get; set; }
+
+        public int MinutosTardanza { get; set; }
+
         public string Mensaje { get; set; } = string.Empty;
     }
 }

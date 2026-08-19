@@ -10,6 +10,8 @@ import {
     obtenerEmpleados,
     obtenerEmpleado,
     obtenerCargosActivos,
+    obtenerDepartamentosActivos,
+    obtenerHorariosLaboralesActivos,
     crearEmpleado,
     actualizarEmpleado,
     cambiarEstadoEmpleado,
@@ -81,6 +83,15 @@ const inputCodigoEmpleado =
 const selectCargo =
     document.getElementById("idCargo");
 
+const selectDepartamento =
+    document.getElementById("idDepartamento");
+
+const selectHorarioLaboral =
+    document.getElementById("idHorarioLaboral");
+
+const inputNumeroINSS =
+    document.getElementById("numeroINSS");
+
 const inputNombres =
     document.getElementById("nombres");
 
@@ -148,6 +159,8 @@ const mensajePin =
 
 let empleados = [];
 let cargos = [];
+let departamentos = [];
+let horariosLaborales = [];
 let temporizadorMensaje = null;
 
 document.addEventListener(
@@ -251,13 +264,19 @@ async function cargarInformacion() {
         const resultados =
             await Promise.all([
                 obtenerEmpleados(),
-                obtenerCargosActivos()
+                obtenerCargosActivos(),
+                obtenerDepartamentosActivos(),
+                obtenerHorariosLaboralesActivos()
             ]);
 
         empleados = resultados[0];
         cargos = resultados[1];
+        departamentos = resultados[2];
+        horariosLaborales = resultados[3];
 
         llenarSelectCargos();
+        llenarSelectDepartamentos();
+        llenarSelectHorariosLaborales();
         actualizarContador();
         aplicarFiltros();
     } catch (error) {
@@ -557,6 +576,15 @@ async function abrirModalEditar(idEmpleado) {
         selectCargo.value =
             empleado.idCargo;
 
+        selectDepartamento.value =
+            empleado.idDepartamento ?? "";
+
+        selectHorarioLaboral.value =
+            empleado.idHorarioLaboral ?? "";
+
+        inputNumeroINSS.value =
+            empleado.numeroINSS ?? "";
+
         inputNombres.value =
             empleado.nombres;
 
@@ -672,6 +700,16 @@ function obtenerDatosFormulario() {
         idCargo:
             Number(selectCargo.value),
 
+        idDepartamento:
+            selectDepartamento.value
+                ? Number(selectDepartamento.value)
+                : null,
+
+        idHorarioLaboral:
+            selectHorarioLaboral.value
+                ? Number(selectHorarioLaboral.value)
+                : null,
+
         codigoEmpleado:
             inputCodigoEmpleado.value
                 .trim()
@@ -682,6 +720,9 @@ function obtenerDatosFormulario() {
 
         identificacion:
             inputIdentificacion.value.trim(),
+
+        numeroINSS:
+            inputNumeroINSS.value.trim() || null,
 
         nombres:
             inputNombres.value.trim(),
@@ -933,6 +974,32 @@ function llenarSelectCargos() {
             cargo.nombre;
 
         selectCargo.appendChild(opcion);
+    });
+}
+
+function llenarSelectDepartamentos() {
+    selectDepartamento.innerHTML = `
+        <option value="">Seleccione un departamento</option>
+    `;
+
+    departamentos.forEach(departamento => {
+        const opcion = document.createElement("option");
+        opcion.value = departamento.idDepartamento;
+        opcion.textContent = departamento.nombre;
+        selectDepartamento.appendChild(opcion);
+    });
+}
+
+function llenarSelectHorariosLaborales() {
+    selectHorarioLaboral.innerHTML = `
+        <option value="">Seleccione un horario</option>
+    `;
+
+    horariosLaborales.forEach(horario => {
+        const opcion = document.createElement("option");
+        opcion.value = horario.idHorarioLaboral;
+        opcion.textContent = horario.nombre;
+        selectHorarioLaboral.appendChild(opcion);
     });
 }
 

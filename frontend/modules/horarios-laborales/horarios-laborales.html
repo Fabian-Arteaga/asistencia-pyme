@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AsistenciaPyme | Horarios laborales</title>
+    <link rel="stylesheet" href="../../shared/css/layout.css" />
+    <link rel="stylesheet" href="./horarios-laborales.css" />
+  </head>
+  <body>
+    <div id="sidebarContainer"></div>
+    <div id="topbarContainer"></div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+      <div class="pagina-contenido">
+        <section class="encabezado-pagina">
+          <div>
+            <h2>Horarios laborales</h2>
+            <p>Configure los horarios y días de trabajo de la empresa.</p>
+          </div>
+          <button type="button" id="btnNuevoHorario" class="boton boton--primario">Nuevo horario</button>
+        </section>
+
+        <section class="panel-empleados">
+          <div class="herramientas">
+            <div class="campo-herramienta">
+              <label for="buscarHorario">Buscar</label>
+              <input type="search" id="buscarHorario" placeholder="Nombre o días" autocomplete="off" />
+            </div>
+            <div class="herramientas__acciones">
+              <span id="contadorHorarios">0 horarios</span>
+              <button type="button" id="btnActualizar" class="boton boton--secundario">Actualizar</button>
+            </div>
+          </div>
+
+          <div id="mensajeHorarios" class="mensaje mensaje--oculto" role="alert" aria-live="polite"></div>
+          <div id="estadoCarga" class="estado-tabla">Cargando horarios...</div>
+
+          <div id="contenedorTabla" class="tabla-contenedor tabla-contenedor--oculto">
+            <table class="tabla-empleados">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Entrada</th>
+                  <th>Salida</th>
+                  <th>Días</th>
+                  <th>Estado</th>
+                  <th class="columna-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaHorariosBody"></tbody>
+            </table>
+          </div>
+
+          <div id="sinResultados" class="estado-tabla estado-tabla--oculto">No se encontraron horarios.</div>
+        </section>
+      </div>
+    </main>
+
+    <div id="modalHorario" class="modal modal--oculto" aria-hidden="true">
+      <div id="modalFondo" class="modal__fondo"></div>
+      <section class="modal__contenido modal__contenido--pequeno" role="dialog" aria-modal="true" aria-labelledby="tituloModalHorario">
+        <div class="modal__encabezado">
+          <h3 id="tituloModalHorario">Nuevo horario</h3>
+          <button type="button" id="btnCerrarModal" class="modal__cerrar" aria-label="Cerrar">×</button>
+        </div>
+
+        <form id="formHorario" autocomplete="off" novalidate>
+          <input type="hidden" id="idHorarioLaboral" />
+
+          <div class="formulario-grid">
+            <div class="campo-formulario campo-formulario--completo">
+              <label for="nombreHorario">Nombre</label>
+              <input type="text" id="nombreHorario" maxlength="80" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="horaEntrada">Hora de entrada</label>
+              <input type="time" id="horaEntrada" required />
+            </div>
+
+            <div class="campo-formulario">
+              <label for="horaSalida">Hora de salida</label>
+              <input type="time" id="horaSalida" required />
+            </div>
+
+            <div class="campo-formulario campo-formulario--completo">
+              <label for="diasLaborales">Días laborales</label>
+              <input type="text" id="diasLaborales" maxlength="50" placeholder="Ej: Lun,Mar,Mie,Jue,Vie" required />
+            </div>
+          </div>
+
+          <div id="mensajeFormulario" class="mensaje mensaje--oculto" role="alert"></div>
+
+          <div class="modal__acciones">
+            <button type="button" id="btnCancelar" class="boton boton--secundario">Cancelar</button>
+            <button type="submit" id="btnGuardarHorario" class="boton boton--primario">Guardar</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script type="module" src="./horarios-laborales.js"></script>
+  </body>
+</html>

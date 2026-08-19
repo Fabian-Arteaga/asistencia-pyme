@@ -13,6 +13,8 @@ const RUTA_EMPLEADOS =
 const RUTA_TIPOS_DEDUCCION =
     "/tipos-deduccion";
 
+const RUTA_DEPARTAMENTOS = "/Departamentos";
+
 
 export async function obtenerPlanillas() {
     const respuesta =
@@ -56,38 +58,16 @@ export async function obtenerPlanillasPorEmpleado(
 export async function generarPlanilla(
     datos
 ) {
+    const payload = {
+        idAdministrador: datos.idAdministrador ?? 0,
+        idDepartamento: datos.idDepartamento,
+        fechaInicioPeriodo: datos.fechaInicioPeriodo,
+        fechaFinPeriodo: datos.fechaFinPeriodo
+    };
+
     return apiPost(
         RUTA_PLANILLAS,
-        {
-            codigoEmpleado:
-                datos.codigoEmpleado,
-
-            idAdministrador:
-                datos.idAdministrador,
-
-            fechaInicioPeriodo:
-                datos.fechaInicioPeriodo,
-
-            fechaFinPeriodo:
-                datos.fechaFinPeriodo,
-
-            ingresosAdicionales:
-                datos.ingresosAdicionales,
-
-            deducciones:
-                datos.deducciones.map(
-                    deduccion => ({
-                        idTipoDeduccion:
-                            deduccion.idTipoDeduccion,
-
-                        valorAplicado:
-                            deduccion.valorAplicado,
-
-                        observacion:
-                            deduccion.observacion
-                    })
-                )
-        }
+        payload
     );
 }
 
@@ -124,6 +104,44 @@ export async function obtenerTiposDeduccionParaPlanilla() {
     return normalizarListaTiposDeduccion(
         respuesta
     );
+}
+
+export async function obtenerDepartamentos() {
+    const respuesta = await apiGet(RUTA_DEPARTAMENTOS);
+    if (!Array.isArray(respuesta)) {
+        return (respuesta.items || respuesta.datos || respuesta.registros || []).map(d => ({
+            idDepartamento: d.idDepartamento ?? d.IdDepartamento ?? d.id,
+            nombre: d.nombre ?? d.Nombre ?? d.nombreDepartamento ?? d.NombreDepartamento ?? ""
+        }));
+    }
+
+    return respuesta.map(d => ({
+        idDepartamento: d.idDepartamento ?? d.IdDepartamento ?? d.id,
+        nombre: d.nombre ?? d.Nombre ?? d.nombreDepartamento ?? d.NombreDepartamento ?? ""
+    }));
+}
+
+export async function recalcularPlanilla(idPlanilla, idAdministrador) {
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/recalcular`, { idAdministrador: idAdministrador ?? 0 });
+}
+
+export async function enviarPlanillaRevision(idPlanilla, idAdministrador) {
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/enviar-revision`, { idAdministrador: idAdministrador ?? 0 });
+}
+
+export async function cerrarPlanilla(idPlanilla, idAdministrador) {
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/cerrar`, { idAdministrador: idAdministrador ?? 0 });
+}
+
+export async function pagarPlanilla(idPlanilla, idAdministrador) {
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/pagar`, { idAdministrador: idAdministrador ?? 0 });
+}
+
+export async function anularPlanilla(idPlanilla, idAdministrador, motivo = "") {
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/anular`, {
+        idAdministrador: idAdministrador ?? 0,
+        motivo
+    });
 }
 
 

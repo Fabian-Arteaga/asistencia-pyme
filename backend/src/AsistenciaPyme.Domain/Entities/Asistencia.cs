@@ -14,6 +14,15 @@ namespace AsistenciaPyme.Domain.Entities
 
         public DateTime? HoraSalida { get; set; }
 
+        // Tardanza detection fields
+        public bool EsEntradaTardia { get; set; }
+
+        public int MinutosTardanza { get; set; }
+
+        public DateTime? HoraProgramadaEntrada { get; set; }
+
+        public DateTime? HoraProgramadaSalida { get; set; }
+
         public string? Observacion { get; set; }
 
         public bool Corregida { get; set; }

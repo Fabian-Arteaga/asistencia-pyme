@@ -28,88 +28,23 @@ public class ObtenerPlanillasHandler
                 p => p.FechaInicioPeriodo)
             .Select(p => new PlanillaDto
             {
-                IdPlanilla =
-                    p.IdPlanilla,
-
-                IdEmpleado =
-                    p.IdEmpleado,
-
-                CodigoEmpleado =
-                    p.Empleado.CodigoEmpleado,
-
-                NombreEmpleado =
-                    p.Empleado.Nombres + " " +
-                    p.Empleado.Apellidos,
-
-                IdAdministrador =
-                    p.IdAdministrador,
-
-                NombreAdministrador =
-                    p.Administrador.Nombres + " " +
-                    p.Administrador.Apellidos,
-
-                FechaInicioPeriodo =
-                    p.FechaInicioPeriodo,
-
-                FechaFinPeriodo =
-                    p.FechaFinPeriodo,
-
-                SalarioBasePeriodo =
-                    p.SalarioBasePeriodo,
-
-                IngresosAdicionales =
-                    p.IngresosAdicionales,
-
-                SalarioBruto =
-                    p.SalarioBasePeriodo +
-                    p.IngresosAdicionales,
-
-                TotalDeducciones =
-                    p.TotalDeducciones,
-
-                SalarioNeto =
-                    p.SalarioNeto,
-
-                Estado =
-                    p.Estado,
-
-                FechaCreacion =
-                    p.FechaCreacion,
-
-                FechaActualizacion =
-                    p.FechaActualizacion,
-
-                Deducciones =
-                    p.Deducciones
-                        .OrderBy(
-                            d =>
-                                d.IdDeduccionPlanilla)
-                        .Select(
-                            d =>
-                                new DeduccionPlanillaDto
-                                {
-                                    IdDeduccionPlanilla =
-                                        d.IdDeduccionPlanilla,
-
-                                    IdTipoDeduccion =
-                                        d.IdTipoDeduccion,
-
-                                    NombreTipoDeduccion =
-                                        d.TipoDeduccion.Nombre,
-
-                                    TipoCalculo =
-                                        d.TipoDeduccion.TipoCalculo,
-
-                                    ValorAplicado =
-                                        d.ValorAplicado,
-
-                                    MontoCalculado =
-                                        d.MontoCalculado,
-
-                                    Observacion =
-                                        d.Observacion
-                                })
-                        .ToList()
+                IdPlanilla = p.IdPlanilla,
+                IdDepartamento = p.IdDepartamento,
+                NombreDepartamento = p.Departamento != null ? p.Departamento.Nombre : null,
+                FechaInicioPeriodo = p.FechaInicioPeriodo,
+                FechaFinPeriodo = p.FechaFinPeriodo,
+                CantidadEmpleados = p.CantidadEmpleados,
+                TotalSalarioBase = p.TotalSalarioBase,
+                TotalHorasExtras = p.TotalHorasExtras,
+                TotalIngresos = p.TotalIngresos,
+                TotalDeducciones = p.TotalDeducciones,
+                TotalNeto = p.TotalNeto,
+                Estado = p.Estado,
+                FechaGeneracion = p.FechaGeneracion,
+                FechaCierre = p.FechaCierre,
+                FechaCreacion = p.FechaCreacion,
+                FechaActualizacion = p.FechaActualizacion,
+                Detalles = new List<DetallePlanillaDto>()
             })
             .ToListAsync(cancellationToken);
     }

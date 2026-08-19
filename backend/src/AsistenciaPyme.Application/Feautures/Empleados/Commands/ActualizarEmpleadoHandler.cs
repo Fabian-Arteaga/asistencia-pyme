@@ -1,5 +1,6 @@
 ﻿using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Application.Features.Empleados.DTOs;
+using AsistenciaPyme.Domain.Entities;
 using AsistenciaPyme.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,28 @@ public class ActualizarEmpleadoHandler
                 "No se puede asignar un cargo inactivo.");
         }
 
+        if (request.IdDepartamento.HasValue)
+        {
+            bool departamentoValido = await _context.Departamentos
+                .AnyAsync(d => d.IdDepartamento == request.IdDepartamento.Value && d.Activo, cancellationToken);
+
+            if (!departamentoValido)
+            {
+                throw new InvalidOperationException("El departamento seleccionado no existe o está inactivo.");
+            }
+        }
+
+        if (request.IdHorarioLaboral.HasValue)
+        {
+            bool horarioValido = await _context.HorariosLaborales
+                .AnyAsync(h => h.IdHorarioLaboral == request.IdHorarioLaboral.Value && h.Activo, cancellationToken);
+
+            if (!horarioValido)
+            {
+                throw new InvalidOperationException("El horario laboral seleccionado no existe o está inactivo.");
+            }
+        }
+
         string codigoEmpleado = request.CodigoEmpleado.Trim();
         string identificacion = request.Identificacion.Trim();
 
@@ -78,9 +101,26 @@ public class ActualizarEmpleadoHandler
                 "Ya existe otro empleado con esa identificación.");
         }
 
+        if (!string.IsNullOrWhiteSpace(request.NumeroINSS))
+        {
+            string numeroInss = request.NumeroINSS.Trim();
+            bool inssDuplicado = await _context.Empleados
+                .AnyAsync(e => e.IdEmpleado != request.IdEmpleado && e.NumeroINSS != null && e.NumeroINSS == numeroInss, cancellationToken);
+
+            if (inssDuplicado)
+            {
+                throw new InvalidOperationException("Ya existe otro empleado con ese número de INSS.");
+            }
+        }
+
+        var departamentoAnterior = empleado.IdDepartamento;
+
         empleado.IdCargo = request.IdCargo;
+        empleado.IdDepartamento = request.IdDepartamento;
+        empleado.IdHorarioLaboral = request.IdHorarioLaboral;
         empleado.CodigoEmpleado = codigoEmpleado;
         empleado.Identificacion = identificacion;
+        empleado.NumeroINSS = string.IsNullOrWhiteSpace(request.NumeroINSS) ? null : request.NumeroINSS.Trim();
         empleado.Nombres = request.Nombres.Trim();
         empleado.Apellidos = request.Apellidos.Trim();
 
@@ -103,15 +143,47 @@ public class ActualizarEmpleadoHandler
         empleado.SalarioBase = request.SalarioBase;
         empleado.FechaActualizacion = DateTime.UtcNow;
 
+        if (departamentoAnterior.HasValue && request.IdDepartamento.HasValue && departamentoAnterior.Value != request.IdDepartamento.Value)
+        {
+            var historialAbierto = await _context.EmpleadoDepartamentoHistorials
+                .FirstOrDefaultAsync(h => h.IdEmpleado == empleado.IdEmpleado && h.IdDepartamento == departamentoAnterior.Value && h.FechaFin == null, cancellationToken);
+
+            if (historialAbierto is not null)
+            {
+                historialAbierto.FechaFin = DateTime.UtcNow;
+            }
+
+            _context.EmpleadoDepartamentoHistorials.Add(new EmpleadoDepartamentoHistorial
+            {
+                IdEmpleado = empleado.IdEmpleado,
+                IdDepartamento = request.IdDepartamento.Value,
+                FechaInicio = DateTime.UtcNow
+            });
+        }
+        else if (!departamentoAnterior.HasValue && request.IdDepartamento.HasValue)
+        {
+            _context.EmpleadoDepartamentoHistorials.Add(new EmpleadoDepartamentoHistorial
+            {
+                IdEmpleado = empleado.IdEmpleado,
+                IdDepartamento = request.IdDepartamento.Value,
+                FechaInicio = DateTime.UtcNow
+            });
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return new EmpleadoDto
         {
             IdEmpleado = empleado.IdEmpleado,
             IdCargo = empleado.IdCargo,
+            IdDepartamento = empleado.IdDepartamento,
+            IdHorarioLaboral = empleado.IdHorarioLaboral,
             NombreCargo = cargo.Nombre,
+            NombreDepartamento = empleado.Departamento?.Nombre,
+            NombreHorarioLaboral = empleado.HorarioLaboral?.Nombre,
             CodigoEmpleado = empleado.CodigoEmpleado,
             Identificacion = empleado.Identificacion,
+            NumeroINSS = empleado.NumeroINSS,
             Nombres = empleado.Nombres,
             Apellidos = empleado.Apellidos,
             Telefono = empleado.Telefono,

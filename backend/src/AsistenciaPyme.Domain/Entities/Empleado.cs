@@ -11,6 +11,9 @@ namespace AsistenciaPyme.Domain.Entities
 
         public int IdCargo { get; set; }
 
+        // New: Departamento relationship
+        public int? IdDepartamento { get; set; }
+
         public string CodigoEmpleado { get; set; } = string.Empty;
 
         public string PinHash { get; set; } = string.Empty;
@@ -31,6 +34,12 @@ namespace AsistenciaPyme.Domain.Entities
 
         public decimal SalarioBase { get; set; }
 
+        // New: Numero INSS (nullable, unique when not null)
+        public string? NumeroINSS { get; set; }
+
+        // New: Horario laboral reference
+        public int? IdHorarioLaboral { get; set; }
+
         public EstadoEmpleado Estado { get; set; } = EstadoEmpleado.Activo;
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
@@ -38,6 +47,18 @@ namespace AsistenciaPyme.Domain.Entities
         public DateTime? FechaActualizacion { get; set; }
 
         public Cargo Cargo { get; set; } = null!;
+
+        // New relations
+        public Departamento? Departamento { get; set; }
+
+        public HorarioLaboral? HorarioLaboral { get; set; }
+
+        public ICollection<HoraExtra> HorasExtras { get; set; } = new List<HoraExtra>();
+
+        public ICollection<Embargo> Embargos { get; set; } = new List<Embargo>();
+
+        public ICollection<EmpleadoDepartamentoHistorial> DepartamentoHistorial { get; set; }
+            = new List<EmpleadoDepartamentoHistorial>();
 
         public ICollection<Asistencia> Asistencias { get; set; }
             = new List<Asistencia>();
