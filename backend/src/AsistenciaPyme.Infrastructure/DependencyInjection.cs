@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Infrastructure.Persistence;
 using AsistenciaPyme.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +50,7 @@ public static class DependencyInjection
 
         services.AddScoped<AsistenciaPyme.Application.Common.Interfaces.ICalculadorHorasExtras, Persistence.CalculadorHorasExtras>();
         services.AddScoped<AsistenciaPyme.Application.Common.Interfaces.ICalculadorIndemnizacion, Persistence.CalculadorIndemnizacion>();
+        services.AddScoped<IHistoricalDataSeeder, Persistence.Seeding.HistoricalDataSeeder>();
 
         return services;
     }

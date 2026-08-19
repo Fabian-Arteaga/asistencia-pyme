@@ -21,10 +21,24 @@ public class ObtenerEmpleadosHandler
         ObtenerEmpleadosQuery request,
         CancellationToken cancellationToken)
     {
-        return await _context.Empleados
+        var query = _context.Empleados
             .AsNoTracking()
             .Include(e => e.Departamento)
             .Include(e => e.HorarioLaboral)
+            .Include(e => e.JefeDirecto)
+            .AsQueryable();
+
+        if (request.IdDepartamento.HasValue)
+        {
+            query = query.Where(e => e.IdDepartamento == request.IdDepartamento.Value);
+        }
+
+        if (request.SoloActivos.HasValue && request.SoloActivos.Value)
+        {
+            query = query.Where(e => e.Estado == EstadoEmpleado.Activo);
+        }
+
+        return await query
             .OrderBy(e => e.Nombres)
             .ThenBy(e => e.Apellidos)
             .Select(e => new EmpleadoDto

@@ -4,137 +4,90 @@ import {
     apiPatch
 } from "../../shared/js/api.js";
 
-const RUTA_PLANILLAS =
-    "/Planillas";
-
-const RUTA_EMPLEADOS =
-    "/Empleados";
-
-const RUTA_TIPOS_DEDUCCION =
-    "/tipos-deduccion";
-
+const RUTA_PLANILLAS = "/Planillas";
+const RUTA_EMPLEADOS = "/Empleados";
 const RUTA_DEPARTAMENTOS = "/Departamentos";
 
-
 export async function obtenerPlanillas() {
-    const respuesta =
-        await apiGet(
-            RUTA_PLANILLAS
-        );
-
-    return normalizarListaPlanillas(
-        respuesta
-    );
+    const respuesta = await apiGet(RUTA_PLANILLAS);
+    return normalizarListaPlanillas(respuesta);
 }
 
-export async function obtenerPlanillaPorId(
-    idPlanilla
-) {
-    const respuesta =
-        await apiGet(
-            `${RUTA_PLANILLAS}/${idPlanilla}`
-        );
-
-    return normalizarPlanilla(
-        respuesta
-    );
+export async function obtenerPlanillaPorId(idPlanilla) {
+    const respuesta = await apiGet(`${RUTA_PLANILLAS}/${idPlanilla}`);
+    return normalizarPlanilla(respuesta);
 }
 
-export async function obtenerPlanillasPorEmpleado(
-    codigoEmpleado
-) {
-    const respuesta =
-        await apiGet(
-            `${RUTA_PLANILLAS}/empleado/${encodeURIComponent(
-                codigoEmpleado
-            )}`
-        );
-
-    return normalizarListaPlanillas(
-        respuesta
+export async function obtenerPlanillasPorEmpleado(codigoEmpleado) {
+    const respuesta = await apiGet(
+        `${RUTA_PLANILLAS}/empleado/${encodeURIComponent(codigoEmpleado)}`
     );
+    return normalizarListaPlanillas(respuesta);
 }
 
-export async function generarPlanilla(
-    datos
-) {
+export async function generarPlanilla(datos) {
     const payload = {
         idAdministrador: datos.idAdministrador ?? 0,
         idDepartamento: datos.idDepartamento,
         fechaInicioPeriodo: datos.fechaInicioPeriodo,
-        fechaFinPeriodo: datos.fechaFinPeriodo
+        fechaFinPeriodo: datos.fechaFinPeriodo,
+        idsEmpleadosSeleccionados: datos.idsEmpleadosSeleccionados ?? []
     };
 
-    return apiPost(
-        RUTA_PLANILLAS,
-        payload
-    );
+    return apiPost(RUTA_PLANILLAS, payload);
 }
 
-export async function cambiarEstadoPlanilla(
-    idPlanilla,
-    estado
-) {
-    return apiPatch(
-        `${RUTA_PLANILLAS}/${idPlanilla}/estado`,
-        {
-            estado
-        }
-    );
+export async function cambiarEstadoPlanilla(idPlanilla, estado) {
+    return apiPatch(`${RUTA_PLANILLAS}/${idPlanilla}/estado`, {
+        estado
+    });
 }
 
 export async function obtenerEmpleadosParaPlanilla() {
-    const respuesta =
-        await apiGet(
-            RUTA_EMPLEADOS
-        );
-
-    return normalizarListaEmpleados(
-        respuesta
-    );
+    const respuesta = await apiGet(RUTA_EMPLEADOS);
+    return normalizarListaEmpleados(respuesta);
 }
 
-
-export async function obtenerTiposDeduccionParaPlanilla() {
-    const respuesta =
-        await apiGet(
-            RUTA_TIPOS_DEDUCCION
-        );
-
-    return normalizarListaTiposDeduccion(
-        respuesta
+export async function obtenerEmpleadosPorDepartamento(idDepartamento) {
+    const respuesta = await apiGet(
+        `${RUTA_DEPARTAMENTOS}/${idDepartamento}/empleados?soloActivos=true`
     );
+    return normalizarListaEmpleados(respuesta);
 }
 
 export async function obtenerDepartamentos() {
     const respuesta = await apiGet(RUTA_DEPARTAMENTOS);
-    if (!Array.isArray(respuesta)) {
-        return (respuesta.items || respuesta.datos || respuesta.registros || []).map(d => ({
-            idDepartamento: d.idDepartamento ?? d.IdDepartamento ?? d.id,
-            nombre: d.nombre ?? d.Nombre ?? d.nombreDepartamento ?? d.NombreDepartamento ?? ""
-        }));
-    }
-
-    return respuesta.map(d => ({
-        idDepartamento: d.idDepartamento ?? d.IdDepartamento ?? d.id,
-        nombre: d.nombre ?? d.Nombre ?? d.nombreDepartamento ?? d.NombreDepartamento ?? ""
-    }));
+    const lista = extraerLista(respuesta);
+    return lista.map(d => ({
+        idDepartamento: d.idDepartamento ?? d.IdDepartamento ?? d.id ?? d.Id ?? 0,
+        nombre: d.nombre ?? d.Nombre ?? d.nombreDepartamento ?? d.NombreDepartamento ?? "",
+        descripcion: d.descripcion ?? d.Descripcion ?? "",
+        activo: convertirActivo(d.activo ?? d.Activo)
+    })).filter(d => d.activo);
 }
 
 export async function recalcularPlanilla(idPlanilla, idAdministrador) {
-    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/recalcular`, { idAdministrador: idAdministrador ?? 0 });
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/recalcular`, {
+        idAdministrador: idAdministrador ?? 0
+    });
 }
 
 export async function enviarPlanillaRevision(idPlanilla, idAdministrador) {
-    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/enviar-revision`, { idAdministrador: idAdministrador ?? 0 });
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/enviar-revision`, {
+        idAdministrador: idAdministrador ?? 0
+    });
 }
 
 export async function cerrarPlanilla(idPlanilla, idAdministrador) {
-    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/cerrar`, { idAdministrador: idAdministrador ?? 0 });
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/cerrar`, {
+        idAdministrador: idAdministrador ?? 0
+    });
 }
 
 export async function pagarPlanilla(idPlanilla, idAdministrador) {
-    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/pagar`, { idAdministrador: idAdministrador ?? 0 });
+    return apiPost(`${RUTA_PLANILLAS}/${idPlanilla}/pagar`, {
+        idAdministrador: idAdministrador ?? 0
+    });
 }
 
 export async function anularPlanilla(idPlanilla, idAdministrador, motivo = "") {
@@ -144,10 +97,7 @@ export async function anularPlanilla(idPlanilla, idAdministrador, motivo = "") {
     });
 }
 
-
-function extraerLista(
-    respuesta
-) {
+function extraerLista(respuesta) {
     if (Array.isArray(respuesta)) {
         return respuesta;
     }
@@ -167,55 +117,74 @@ function extraerLista(
         respuesta.Resultados ??
         [];
 
-    return Array.isArray(lista)
-        ? lista
-        : [];
+    return Array.isArray(lista) ? lista : [];
 }
 
-
-function normalizarListaPlanillas(
-    respuesta
-) {
+export function normalizarListaPlanillas(respuesta) {
     return extraerLista(respuesta)
         .map(normalizarPlanilla)
         .filter(Boolean);
 }
 
-function normalizarPlanilla(
-    planilla
-) {
+export function normalizarPlanilla(planilla) {
     if (!planilla) {
         return null;
     }
 
-    const deducciones =
-        planilla.deducciones ??
-        planilla.Deducciones ??
-        [];
+    const salarioBase = numero(
+        planilla.totalSalarioBase ??
+        planilla.TotalSalarioBase ??
+        planilla.salarioBasePeriodo ??
+        planilla.SalarioBasePeriodo
+    );
 
-    const salarioBase =
-        numero(
-            planilla.salarioBasePeriodo ??
-            planilla.SalarioBasePeriodo
-        );
+    const ingresos = numero(
+        planilla.totalIngresos ??
+        planilla.TotalIngresos ??
+        planilla.totalHorasExtras ??
+        planilla.TotalHorasExtras ??
+        planilla.ingresosAdicionales ??
+        planilla.IngresosAdicionales
+    );
 
-    const ingresos =
-        numero(
-            planilla.ingresosAdicionales ??
-            planilla.IngresosAdicionales
-        );
+    const deducciones = numero(
+        planilla.totalDeducciones ??
+        planilla.TotalDeducciones
+    );
+
+    const salarioNeto = numero(
+        planilla.totalNeto ??
+        planilla.TotalNeto ??
+        planilla.salarioNeto ??
+        planilla.SalarioNeto
+    );
+
+    const detalles = (planilla.detalles ?? planilla.Detalles ?? [])
+        .map(normalizarDetallePlanilla)
+        .filter(Boolean);
 
     return {
         idPlanilla:
             planilla.idPlanilla ??
             planilla.IdPlanilla ??
             planilla.id ??
-            planilla.Id,
+            planilla.Id ??
+            0,
+
+        idDepartamento:
+            planilla.idDepartamento ??
+            planilla.IdDepartamento ??
+            null,
+
+        nombreDepartamento:
+            planilla.nombreDepartamento ??
+            planilla.NombreDepartamento ??
+            "",
 
         idEmpleado:
             planilla.idEmpleado ??
             planilla.IdEmpleado ??
-            0,
+            null,
 
         codigoEmpleado:
             planilla.codigoEmpleado ??
@@ -237,48 +206,42 @@ function normalizarPlanilla(
             planilla.NombreAdministrador ??
             "",
 
-        fechaInicioPeriodo:
-            fecha(
-                planilla.fechaInicioPeriodo ??
-                planilla.FechaInicioPeriodo
-            ),
+        cantidadEmpleados: numero(
+            planilla.cantidadEmpleados ??
+            planilla.CantidadEmpleados ??
+            detalles.length
+        ),
 
-        fechaFinPeriodo:
-            fecha(
-                planilla.fechaFinPeriodo ??
-                planilla.FechaFinPeriodo
-            ),
+        fechaInicioPeriodo: fecha(
+            planilla.fechaInicioPeriodo ??
+            planilla.FechaInicioPeriodo
+        ),
 
-        salarioBasePeriodo:
-            salarioBase,
+        fechaFinPeriodo: fecha(
+            planilla.fechaFinPeriodo ??
+            planilla.FechaFinPeriodo
+        ),
 
-        ingresosAdicionales:
-            ingresos,
+        salarioBasePeriodo: salarioBase,
+        ingresosAdicionales: ingresos,
+        totalDeducciones: deducciones,
+        salarioNeto: salarioNeto,
 
-        salarioBruto:
-            numero(
-                planilla.salarioBruto ??
-                planilla.SalarioBruto ??
-                salarioBase + ingresos
-            ),
+        estado: numero(
+            planilla.estado ??
+            planilla.Estado ??
+            1
+        ),
 
-        totalDeducciones:
-            numero(
-                planilla.totalDeducciones ??
-                planilla.TotalDeducciones
-            ),
+        fechaGeneracion:
+            planilla.fechaGeneracion ??
+            planilla.FechaGeneracion ??
+            null,
 
-        salarioNeto:
-            numero(
-                planilla.salarioNeto ??
-                planilla.SalarioNeto
-            ),
-
-        estado:
-            numero(
-                planilla.estado ??
-                planilla.Estado
-            ),
+        fechaCierre:
+            planilla.fechaCierre ??
+            planilla.FechaCierre ??
+            null,
 
         fechaCreacion:
             planilla.fechaCreacion ??
@@ -290,74 +253,136 @@ function normalizarPlanilla(
             planilla.FechaActualizacion ??
             null,
 
-        deducciones:
-            Array.isArray(deducciones)
-                ? deducciones
-                    .map(normalizarDeduccionPlanilla)
-                    .filter(Boolean)
-                : []
+        detalles
     };
 }
 
-function normalizarDeduccionPlanilla(
-    deduccion
-) {
-    if (!deduccion) {
+export function normalizarDetallePlanilla(detalle) {
+    if (!detalle) {
         return null;
     }
 
     return {
-        idDeduccionPlanilla:
-            deduccion.idDeduccionPlanilla ??
-            deduccion.IdDeduccionPlanilla ??
+        idDetallePlanilla:
+            detalle.idDetallePlanilla ??
+            detalle.IdDetallePlanilla ??
             0,
 
-        idTipoDeduccion:
-            deduccion.idTipoDeduccion ??
-            deduccion.IdTipoDeduccion ??
+        idEmpleado:
+            detalle.idEmpleado ??
+            detalle.IdEmpleado ??
             0,
 
-        nombreTipoDeduccion:
-            deduccion.nombreTipoDeduccion ??
-            deduccion.NombreTipoDeduccion ??
+        codigoEmpleado:
+            detalle.codigoEmpleado ??
+            detalle.CodigoEmpleado ??
             "",
 
-        tipoCalculo:
-            deduccion.tipoCalculo ??
-            deduccion.TipoCalculo ??
-            0,
+        nombreEmpleado:
+            detalle.nombreEmpleado ??
+            detalle.NombreEmpleado ??
+            "",
 
-        valorAplicado:
-            numero(
-                deduccion.valorAplicado ??
-                deduccion.ValorAplicado
-            ),
+        numeroINSS:
+            detalle.numeroINSS ??
+            detalle.NumeroINSS ??
+            "",
 
-        montoCalculado:
-            numero(
-                deduccion.montoCalculado ??
-                deduccion.MontoCalculado
-            ),
+        cargo:
+            detalle.cargo ??
+            detalle.Cargo ??
+            "",
 
-        observacion:
-            deduccion.observacion ??
-            deduccion.Observacion ??
-            ""
+        departamento:
+            detalle.departamento ??
+            detalle.Departamento ??
+            "",
+
+        salarioBase: numero(
+            detalle.salarioBase ??
+            detalle.SalarioBase
+        ),
+
+        diasLaborados: numero(
+            detalle.diasLaborados ??
+            detalle.DiasLaborados
+        ),
+
+        minutosLaborados: numero(
+            detalle.minutosLaborados ??
+            detalle.MinutosLaborados
+        ),
+
+        cantidadTardanzas: numero(
+            detalle.cantidadTardanzas ??
+            detalle.CantidadTardanzas
+        ),
+
+        minutosTardanza: numero(
+            detalle.minutosTardanza ??
+            detalle.MinutosTardanza
+        ),
+
+        descuentoTardanza: numero(
+            detalle.descuentoTardanza ??
+            detalle.DescuentoTardanza
+        ),
+
+        minutosExtrasDetectados: numero(
+            detalle.minutosExtrasDetectados ??
+            detalle.MinutosExtrasDetectados
+        ),
+
+        minutosExtrasAprobados: numero(
+            detalle.minutosExtrasAprobados ??
+            detalle.MinutosExtrasAprobados
+        ),
+
+        montoHorasExtras: numero(
+            detalle.montoHorasExtras ??
+            detalle.MontoHorasExtras
+        ),
+
+        vacacionesAcumuladasPeriodo: numero(
+            detalle.vacacionesAcumuladasPeriodo ??
+            detalle.VacacionesAcumuladasPeriodo
+        ),
+
+        saldoVacaciones: numero(
+            detalle.saldoVacaciones ??
+            detalle.SaldoVacaciones
+        ),
+
+        totalIngresos: numero(
+            detalle.totalIngresos ??
+            detalle.TotalIngresos
+        ),
+
+        totalDeducciones: numero(
+            detalle.totalDeducciones ??
+            detalle.TotalDeducciones
+        ),
+
+        salarioNeto: numero(
+            detalle.salarioNeto ??
+            detalle.SalarioNeto
+        ),
+
+        indemnizacionProyectada: numero(
+            detalle.indemnizacionProyectada ??
+            detalle.IndemnizacionProyectada
+        )
     };
 }
 
-function normalizarListaEmpleados(
-    respuesta
-) {
+export function normalizarListaEmpleados(respuesta) {
     return extraerLista(respuesta)
         .map(normalizarEmpleado)
         .filter(Boolean)
         .filter(empleado => empleado.activo);
 }
 
-function normalizarEmpleado(
-    empleado
-) {
+export function normalizarEmpleado(empleado) {
     if (!empleado) {
         return null;
     }
@@ -377,7 +402,24 @@ function normalizarEmpleado(
             empleado.idEmpleado ??
             empleado.IdEmpleado ??
             empleado.id ??
-            empleado.Id,
+            empleado.Id ??
+            0,
+
+        idDepartamento:
+            empleado.idDepartamento ??
+            empleado.IdDepartamento ??
+            null,
+
+        nombreDepartamento:
+            empleado.nombreDepartamento ??
+            empleado.NombreDepartamento ??
+            "",
+
+        nombreCargo:
+            empleado.nombreCargo ??
+            empleado.NombreCargo ??
+            empleado.cargo?.nombre ??
+            "",
 
         codigoEmpleado:
             empleado.codigoEmpleado ??
@@ -389,107 +431,36 @@ function normalizarEmpleado(
             empleado.NombreCompleto ??
             `${nombres} ${apellidos}`.trim(),
 
-        salarioBase:
-            numero(
-                empleado.salarioBase ??
-                empleado.SalarioBase
-            ),
+        salarioBase: numero(
+            empleado.salarioBase ??
+            empleado.SalarioBase
+        ),
 
-        fechaContratacion:
-            fecha(
-                empleado.fechaContratacion ??
-                empleado.FechaContratacion
-            ),
+        fechaContratacion: fecha(
+            empleado.fechaContratacion ??
+            empleado.FechaContratacion
+        ),
 
-        activo:
-            convertirActivo(
-                empleado.activo ??
-                empleado.Activo ??
-                empleado.estado ??
-                empleado.Estado
-            )
+        activo: convertirActivo(
+            empleado.activo ??
+            empleado.Activo ??
+            empleado.estado ??
+            empleado.Estado
+        )
     };
 }
 
-function normalizarListaTiposDeduccion(
-    respuesta
-) {
-    return extraerLista(respuesta)
-        .map(normalizarTipoDeduccion)
-        .filter(Boolean)
-        .filter(tipo => tipo.activo);
+function fecha(valor) {
+    return valor ? String(valor).slice(0, 10) : "";
 }
 
-function normalizarTipoDeduccion(
-    tipo
-) {
-    if (!tipo) {
-        return null;
-    }
-
-    return {
-        idTipoDeduccion:
-            tipo.idTipoDeduccion ??
-            tipo.IdTipoDeduccion ??
-            tipo.id ??
-            tipo.Id,
-
-        nombre:
-            tipo.nombre ??
-            tipo.Nombre ??
-            "",
-
-        descripcion:
-            tipo.descripcion ??
-            tipo.Descripcion ??
-            "",
-
-        tipoCalculo:
-            tipo.tipoCalculo ??
-            tipo.TipoCalculo ??
-            0,
-
-        valorPredeterminado:
-            numero(
-                tipo.valorPredeterminado ??
-                tipo.ValorPredeterminado
-            ),
-
-        activo:
-            convertirActivo(
-                tipo.activo ??
-                tipo.Activo ??
-                tipo.estado ??
-                tipo.Estado
-            )
-    };
-}
-function fecha(
-    valor
-) {
-    return valor
-        ? String(valor).slice(0, 10)
-        : "";
+function numero(valor) {
+    const resultado = Number(valor);
+    return Number.isFinite(resultado) ? resultado : 0;
 }
 
-function numero(
-    valor
-) {
-    const resultado =
-        Number(valor);
-
-    return Number.isFinite(resultado)
-        ? resultado
-        : 0;
-}
-
-function convertirActivo(
-    valor
-) {
-    if (
-        valor === undefined ||
-        valor === null
-    ) {
+function convertirActivo(valor) {
+    if (valor === undefined || valor === null) {
         return true;
     }
 
@@ -501,11 +472,7 @@ function convertirActivo(
         return valor === 1;
     }
 
-    const texto =
-        String(valor)
-            .trim()
-            .toLowerCase();
-
+    const texto = String(valor).trim().toLowerCase();
     return (
         texto === "activo" ||
         texto === "activa" ||

@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Application.Features.Planillas.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -44,7 +44,31 @@ public class ObtenerPlanillasHandler
                 FechaCierre = p.FechaCierre,
                 FechaCreacion = p.FechaCreacion,
                 FechaActualizacion = p.FechaActualizacion,
-                Detalles = new List<DetallePlanillaDto>()
+                Detalles = p.Detalles.Select(d => new DetallePlanillaDto
+                {
+                    IdDetallePlanilla = d.IdDetallePlanilla,
+                    IdEmpleado = d.IdEmpleado,
+                    CodigoEmpleado = d.CodigoEmpleado,
+                    NombreEmpleado = d.NombreEmpleado,
+                    NumeroINSS = d.NumeroINSS,
+                    Cargo = d.Cargo,
+                    Departamento = d.Departamento,
+                    SalarioBase = d.SalarioBase,
+                    DiasLaborados = d.DiasLaborados,
+                    MinutosLaborados = d.MinutosLaborados,
+                    CantidadTardanzas = d.CantidadTardanzas,
+                    MinutosTardanza = d.MinutosTardanza,
+                    DescuentoTardanza = d.DescuentoTardanza,
+                    MinutosExtrasDetectados = d.MinutosExtrasDetectados,
+                    MinutosExtrasAprobados = d.MinutosExtrasAprobados,
+                    MontoHorasExtras = d.MontoHorasExtras,
+                    VacacionesAcumuladasPeriodo = d.VacacionesAcumuladasPeriodo,
+                    SaldoVacaciones = d.SaldoVacaciones,
+                    TotalIngresos = d.TotalIngresos,
+                    TotalDeducciones = d.TotalDeducciones,
+                    SalarioNeto = d.SalarioNeto,
+                    IndemnizacionProyectada = d.IndemnizacionProyectada
+                }).ToList()
             })
             .ToListAsync(cancellationToken);
     }

@@ -76,8 +76,9 @@ export async function cambiarEstadoPeriodo(id, nuevoEstado) {
 }
 
 // 3. Checklist y Ponderaciones
-export async function obtenerChecklist() {
-    return await apiGet(`${RUTA_BASE}/checklist`);
+export async function obtenerChecklist(soloActivos = null) {
+    const query = soloActivos !== null ? `?soloActivos=${soloActivos}` : "";
+    return await apiGet(`${RUTA_BASE}/checklist${query}`);
 }
 
 export async function configurarPonderaciones(ponderaciones) {

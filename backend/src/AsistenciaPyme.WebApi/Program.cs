@@ -136,7 +136,13 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "http://127.0.0.1:5500",
-                "http://localhost:5500"
+                "http://localhost:5500",
+                "http://127.0.0.1:8080",
+                "http://localhost:8080",
+                "http://127.0.0.1:3000",
+                "http://localhost:3000",
+                "http://127.0.0.1:5173",
+                "http://localhost:5173"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -144,6 +150,15 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Ejecución explícita y segura del seeder histórico por línea de comandos (NO automático en arranque web)
+if (args.Contains("--seed-historical"))
+{
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<AsistenciaPyme.Application.Common.Interfaces.IHistoricalDataSeeder>();
+    await seeder.SeedHistoricalDataAsync();
+    return;
+}
 
 if (app.Environment.IsDevelopment())
 {

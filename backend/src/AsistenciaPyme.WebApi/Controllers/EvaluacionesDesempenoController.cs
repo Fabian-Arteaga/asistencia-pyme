@@ -224,9 +224,9 @@ public class EvaluacionesDesempenoController : ControllerBase
     #region Checklist y Categorias
 
     [HttpGet("checklist")]
-    public async Task<ActionResult<List<CategoriaEvaluacionDto>>> ObtenerChecklist(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<CategoriaEvaluacionDto>>> ObtenerChecklist([FromQuery] bool? soloActivos, CancellationToken cancellationToken)
     {
-        var checklist = await _mediator.Send(new ObtenerChecklistEvaluacionQuery(), cancellationToken);
+        var checklist = await _mediator.Send(new ObtenerChecklistEvaluacionQuery { SoloActivos = soloActivos ?? false }, cancellationToken);
         return Ok(checklist);
     }
 

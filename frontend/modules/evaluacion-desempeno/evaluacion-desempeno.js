@@ -556,9 +556,12 @@ function renderizarChecklistAcordeon(categorias) {
         bloque.className = "categoria-bloque";
 
         const criteriosHtml = (cat.criterios || []).map(cr => `
-            <div class="criterio-item-admin">
+            <div class="criterio-item-admin ${cr.activo ? "" : "criterio-item-admin--inactivo"}">
                 <div class="criterio-item-admin__texto">
                     <strong>${escapeHtml(cr.texto)}</strong>
+                    <span class="badge-estado-criterio ${cr.activo ? "badge-estado--activo" : "badge-estado--inactivo"}">
+                        ${cr.activo ? "Activo" : "Inactivo"}
+                    </span>
                     ${cr.descripcion ? `<br><small style="color: #64748b;">${escapeHtml(cr.descripcion)}</small>` : ""}
                 </div>
                 <div class="criterio-item-admin__acciones">
@@ -572,11 +575,11 @@ function renderizarChecklistAcordeon(categorias) {
 
         bloque.innerHTML = `
             <div class="categoria-bloque__encabezado">
-                <span class="categoria-bloque__titulo">${escapeHtml(cat.nombre)} (${(cat.criterios || []).length} preguntas)</span>
+                <span class="categoria-bloque__titulo">${escapeHtml(cat.nombre)} (${(cat.criterios || []).length} criterios)</span>
                 <span class="categoria-bloque__peso">${cat.ponderacion.toFixed(1)}%</span>
             </div>
             <div class="categoria-bloque__cuerpo">
-                ${criteriosHtml || '<p style="color: #64748b; font-size: 13px;">No hay preguntas activas en esta categoría.</p>'}
+                ${criteriosHtml || '<p style="color: #64748b; font-size: 13px;">No hay criterios registrados en esta categoría.</p>'}
             </div>
         `;
         contenedor.appendChild(bloque);

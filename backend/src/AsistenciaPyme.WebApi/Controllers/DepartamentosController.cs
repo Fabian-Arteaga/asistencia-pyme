@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Feautures.Departamentos.Commands;
+using AsistenciaPyme.Application.Feautures.Departamentos.Commands;
 using AsistenciaPyme.Application.Feautures.Departamentos.DTOs;
 using AsistenciaPyme.Application.Feautures.Departamentos.Queries;
 using MediatR;
@@ -43,6 +43,23 @@ public class DepartamentosController : ControllerBase
             return NotFound(new { Mensaje = $"No se encontró el departamento con ID {idDepartamento}." });
         }
         return Ok(departamento);
+    }
+
+    [HttpGet("{idDepartamento:int}/empleados")]
+    public async Task<ActionResult<List<AsistenciaPyme.Application.Features.Empleados.DTOs.EmpleadoDto>>> ObtenerEmpleadosPorDepartamento(
+        int idDepartamento,
+        [FromQuery] bool soloActivos = true,
+        CancellationToken cancellationToken = default)
+    {
+        var empleados = await _mediator.Send(
+            new AsistenciaPyme.Application.Features.Empleados.Queries.ObtenerEmpleadosQuery
+            {
+                IdDepartamento = idDepartamento,
+                SoloActivos = soloActivos
+            },
+            cancellationToken);
+
+        return Ok(empleados);
     }
     [HttpPut("{idDepartamento:int}")]
     public async Task<ActionResult<DepartamentoDto>> Actualizar(int idDepartamento, [FromBody] ActualizarDepartamentoCommand command, CancellationToken cancellationToken)

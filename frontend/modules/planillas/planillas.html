@@ -7,7 +7,6 @@
     <title>AsistenciaPyme | Planillas</title>
 
     <link rel="stylesheet" href="../../shared/css/layout.css" />
-
     <link rel="stylesheet" href="./planillas.css" />
   </head>
 
@@ -22,8 +21,7 @@
         <section class="encabezado-pagina">
           <div>
             <h2>Gestión de planillas</h2>
-
-            <p>Genere y consulte las planillas de los empleados.</p>
+            <p>Genere y consulte las planillas departamentales y de colaboradores.</p>
           </div>
 
           <button
@@ -39,7 +37,6 @@
           <div class="filtros">
             <div class="campo-filtro campo-filtro--empleado">
               <label for="filtroEmpleado"> Empleado </label>
-
               <select id="filtroEmpleado">
                 <option value="">Todos los empleados</option>
               </select>
@@ -47,27 +44,24 @@
 
             <div class="campo-filtro">
               <label for="filtroDesde"> Desde </label>
-
               <input type="date" id="filtroDesde" />
             </div>
 
             <div class="campo-filtro">
               <label for="filtroHasta"> Hasta </label>
-
               <input type="date" id="filtroHasta" />
             </div>
 
             <div class="campo-filtro">
               <label for="filtroEstado"> Estado </label>
-
               <select id="filtroEstado">
                 <option value="">Todos</option>
-
-                <option value="1">Generada</option>
-
-                <option value="2">Pagada</option>
-
-                <option value="3">Anulada</option>
+                <option value="1">Borrador</option>
+                <option value="2">Calculada</option>
+                <option value="3">En revisión</option>
+                <option value="4">Cerrada</option>
+                <option value="5">Pagada</option>
+                <option value="6">Anulada</option>
               </select>
             </div>
 
@@ -99,7 +93,6 @@
 
           <div class="resumen-listado">
             <span id="contadorPlanillas"> 0 planillas </span>
-
             <strong id="totalNetoVisible"> Total neto: C$ 0.00 </strong>
           </div>
 
@@ -112,14 +105,13 @@
             <table class="tabla-planillas">
               <thead>
                 <tr>
-                  <th>Empleado</th>
+                  <th>Departamento / Colaborador</th>
                   <th>Período</th>
                   <th>Salario base</th>
                   <th>Ingresos adicionales</th>
                   <th>Deducciones</th>
                   <th>Salario neto</th>
                   <th>Estado</th>
-
                   <th class="columna-acciones">Acciones</th>
                 </tr>
               </thead>
@@ -164,112 +156,50 @@
 
             <div class="formulario-grid formulario-grid--tres">
               <div class="campo-formulario">
-                <label for="departamentoPlanilla"> Departamento </label>
-
+                <label for="departamentoPlanilla"> Departamento * </label>
                 <select id="departamentoPlanilla" required>
                   <option value="">Seleccione un departamento</option>
                 </select>
               </div>
 
               <div class="campo-formulario">
-                <label for="fechaInicioPeriodo"> Fecha inicial </label>
-
+                <label for="fechaInicioPeriodo"> Fecha inicial * </label>
                 <input type="date" id="fechaInicioPeriodo" required />
               </div>
 
               <div class="campo-formulario">
-                <label for="fechaFinPeriodo"> Fecha final </label>
-
+                <label for="fechaFinPeriodo"> Fecha final * </label>
                 <input type="date" id="fechaFinPeriodo" required />
               </div>
             </div>
-
-            <div class="formulario-grid">
-              <div class="campo-formulario">
-                <label for="salarioBaseEmpleado">
-                  Salario base registrado
-                </label>
-
-                <input
-                  type="text"
-                  id="salarioBaseEmpleado"
-                  value="C$ 0.00"
-                  disabled
-                />
-              </div>
-
-              <div class="campo-formulario">
-                <label for="ingresosAdicionales"> Ingresos adicionales </label>
-
-                <input
-                  type="number"
-                  id="ingresosAdicionales"
-                  min="0"
-                  max="999999999.99"
-                  step="0.01"
-                  value="0"
-                  required
-                />
-              </div>
-            </div>
           </section>
 
-          <section class="seccion-formulario">
+          <section class="seccion-formulario seccion-empleados-planilla">
             <div class="titulo-seccion-acciones">
               <div>
-                <h4>Deducciones</h4>
-
-                <p>Puede aplicar deducciones por porcentaje o monto fijo.</p>
+                <h4>Colaboradores a procesar</h4>
+                <p>Seleccione los colaboradores del departamento que se incluirán en la generación.</p>
               </div>
 
-              <button
-                type="button"
-                id="btnAgregarDeduccion"
-                class="boton boton--secundario"
-              >
-                Agregar deducción
-              </button>
+              <div class="control-seleccionar-todos" id="wrapSeleccionarTodos">
+                <label class="etiqueta-checkbox-todos">
+                  <input type="checkbox" id="chkSeleccionarTodosEmpleados" disabled />
+                  <span>Seleccionar todos</span>
+                </label>
+              </div>
             </div>
 
-            <div id="sinDeducciones" class="sin-deducciones">
-              No se han agregado deducciones.
+            <div class="contador-seleccion-wrap">
+              <span id="contadorEmpleadosSeleccionados" class="badge-contador-seleccion">0 colaboradores seleccionados</span>
             </div>
 
-            <div id="listaDeducciones" class="lista-deducciones"></div>
-          </section>
+            <div id="cargandoEmpleadosDepartamento" class="estado-tabla estado-tabla--oculto">
+              Consultando colaboradores del departamento...
+            </div>
 
-          <section class="resumen-calculo">
-            <h4>Resumen de cálculo</h4>
-
-            <div class="resumen-calculo__grid">
-              <div>
-                <span>Salario base</span>
-
-                <strong id="resumenSalarioBase"> C$ 0.00 </strong>
-              </div>
-
-              <div>
-                <span>Ingresos adicionales</span>
-
-                <strong id="resumenIngresos"> C$ 0.00 </strong>
-              </div>
-
-              <div>
-                <span>Salario bruto</span>
-
-                <strong id="resumenSalarioBruto"> C$ 0.00 </strong>
-              </div>
-
-              <div>
-                <span>Total deducciones</span>
-
-                <strong id="resumenDeducciones"> C$ 0.00 </strong>
-              </div>
-
-              <div class="resumen-calculo__neto">
-                <span>Salario neto estimado</span>
-
-                <strong id="resumenSalarioNeto"> C$ 0.00 </strong>
+            <div id="contenedorListaEmpleadosPlanilla" class="lista-empleados-checklist">
+              <div id="mensajeListaVacia" class="estado-lista-vacia">
+                Seleccione un departamento para consultar y elegir a los colaboradores.
               </div>
             </div>
           </section>
@@ -294,6 +224,7 @@
               type="submit"
               id="btnGuardarPlanilla"
               class="boton boton--primario"
+              disabled
             >
               Generar planilla
             </button>
@@ -377,12 +308,12 @@
 
             <select id="nuevoEstadoPlanilla" required>
               <option value="">Seleccione un estado</option>
-
-              <option value="1">Generada</option>
-
-              <option value="2">Pagada</option>
-
-              <option value="3">Anulada</option>
+              <option value="1">Borrador</option>
+              <option value="2">Calculada</option>
+              <option value="3">En revisión</option>
+              <option value="4">Cerrada</option>
+              <option value="5">Pagada</option>
+              <option value="6">Anulada</option>
             </select>
           </div>
 

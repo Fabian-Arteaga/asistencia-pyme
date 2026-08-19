@@ -60,11 +60,47 @@ namespace AsistenciaPyme.Application.Features.Planillas.Commands
 
             decimal multiplicador = configuracion?.MultiplicadorHoraExtra ?? 2.0m;
 
-            // Obtener empleados activos del departamento
-            var empleados = await _context.Empleados
+            // Obtener todos los empleados activos del departamento
+            var empleadosDepto = await _context.Empleados
                 .AsNoTracking()
                 .Where(e => e.IdDepartamento == request.IdDepartamento && e.Estado == EstadoEmpleado.Activo)
                 .ToListAsync(cancellationToken);
+
+            if (!empleadosDepto.Any())
+            {
+                throw new InvalidOperationException("El departamento seleccionado no tiene colaboradores activos registrados.");
+            }
+
+            List<Empleado> empleadosAProcesar;
+
+            if (request.IdsEmpleadosSeleccionados != null)
+            {
+                if (!request.IdsEmpleadosSeleccionados.Any())
+                {
+                    throw new InvalidOperationException("Debe seleccionar al menos un colaborador para generar la planilla.");
+                }
+
+                var dictEmpleadosDepto = empleadosDepto.ToDictionary(e => e.IdEmpleado);
+                var invalidos = request.IdsEmpleadosSeleccionados.Where(id => !dictEmpleadosDepto.ContainsKey(id)).ToList();
+                if (invalidos.Any())
+                {
+                    throw new InvalidOperationException("Uno o más colaboradores seleccionados no pertenecen al departamento indicado o no están activos.");
+                }
+
+                empleadosAProcesar = request.IdsEmpleadosSeleccionados
+                    .Distinct()
+                    .Select(id => dictEmpleadosDepto[id])
+                    .ToList();
+            }
+            else
+            {
+                empleadosAProcesar = empleadosDepto;
+            }
+
+            if (!empleadosAProcesar.Any())
+            {
+                throw new InvalidOperationException("Debe seleccionar al menos un colaborador para generar la planilla.");
+            }
 
             var fechaInicioUtc = request.FechaInicioPeriodo.ToDateTime(new TimeOnly(0, 0), DateTimeKind.Utc);
             var fechaFinUtc = request.FechaFinPeriodo.ToDateTime(new TimeOnly(23, 59), DateTimeKind.Utc);
@@ -84,7 +120,7 @@ namespace AsistenciaPyme.Application.Features.Planillas.Commands
 
             var detalles = new List<DetallePlanilla>();
 
-            foreach (var empleado in empleados)
+            foreach (var empleado in empleadosAProcesar)
             {
                 // resumen de asistencias en el periodo
                 var asistencias = await _context.Asistencias
@@ -141,8 +177,7 @@ namespace AsistenciaPyme.Application.Features.Planillas.Commands
                     SalarioNeto = salarioNeto,
                     IndemnizacionProyectada = 0m,
                     FechaCreacion = DateTime.UtcNow,
-                    Planilla = planilla,
-                    Empleado = empleado
+                    Planilla = planilla
                 };
 
                 detalles.Add(detalle);

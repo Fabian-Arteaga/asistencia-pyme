@@ -13,5 +13,7 @@ namespace AsistenciaPyme.Application.Features.Planillas.Commands
         public DateOnly FechaInicioPeriodo { get; set; }
 
         public DateOnly FechaFinPeriodo { get; set; }
+
+        public System.Collections.Generic.List<int>? IdsEmpleadosSeleccionados { get; set; }
     }
 }

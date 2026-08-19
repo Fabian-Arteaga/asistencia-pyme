@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Features.Empleados.Commands;
+using AsistenciaPyme.Application.Features.Empleados.Commands;
 using AsistenciaPyme.Application.Features.Empleados.DTOs;
 using AsistenciaPyme.Application.Features.Empleados.Queries;
 using MediatR;
@@ -49,10 +49,16 @@ public class EmpleadosController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<List<EmpleadoDto>>> ObtenerTodos(
+        [FromQuery] int? idDepartamento,
+        [FromQuery] bool? soloActivos,
         CancellationToken cancellationToken)
     {
         List<EmpleadoDto> empleados = await _mediator.Send(
-            new ObtenerEmpleadosQuery(),
+            new ObtenerEmpleadosQuery
+            {
+                IdDepartamento = idDepartamento,
+                SoloActivos = soloActivos
+            },
             cancellationToken);
 
         return Ok(empleados);

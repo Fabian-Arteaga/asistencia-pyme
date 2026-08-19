@@ -11,6 +11,7 @@ namespace AsistenciaPyme.Application.Feautures.EvaluacionesDesempeno.Queries;
 
 public class ObtenerChecklistEvaluacionQuery : IRequest<List<CategoriaEvaluacionDto>>
 {
+    public bool SoloActivos { get; set; } = false;
 }
 
 public class ObtenerChecklistEvaluacionHandler : IRequestHandler<ObtenerChecklistEvaluacionQuery, List<CategoriaEvaluacionDto>>
@@ -37,7 +38,7 @@ public class ObtenerChecklistEvaluacionHandler : IRequestHandler<ObtenerChecklis
                 Orden = c.Orden,
                 Activo = c.Activo,
                 Criterios = c.Criterios
-                    .Where(cr => cr.Activo)
+                    .Where(cr => !request.SoloActivos || cr.Activo)
                     .OrderBy(cr => cr.Orden)
                     .Select(cr => new CriterioEvaluacionDto
                     {

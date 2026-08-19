@@ -631,6 +631,37 @@
     gap: 12px;
 }
 
+.criterio-item-admin--inactivo {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    opacity: 0.75;
+}
+
+.criterio-item-admin--inactivo .criterio-item-admin__texto strong {
+    text-decoration: line-through;
+    color: #64748b;
+}
+
+.badge-estado-criterio {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 3px;
+    margin-left: 6px;
+    text-transform: uppercase;
+}
+
+.badge-estado--activo {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.badge-estado--inactivo {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
 .criterio-item-admin__texto {
     font-size: 13px;
     color: #334155;
