@@ -75,8 +75,8 @@ public class PayrollBusinessRulesTests
         var planillas = 1;
         var detalles = cantidadEmpleados;
 
-        Assert.Equal(planillas, 1);
-        Assert.Equal(detalles, 10);
+        Assert.Equal(1, planillas);
+        Assert.Equal(10, detalles);
     }
 
     [Fact]

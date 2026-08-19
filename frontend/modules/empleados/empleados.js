@@ -89,6 +89,9 @@ const selectDepartamento =
 const selectHorarioLaboral =
     document.getElementById("idHorarioLaboral");
 
+const selectJefeDirecto =
+    document.getElementById("idJefeDirecto");
+
 const inputNumeroINSS =
     document.getElementById("numeroINSS");
 
@@ -542,6 +545,9 @@ function abrirModalNuevo() {
     botonGuardarEmpleado.textContent =
         "Guardar";
 
+    llenarSelectJefesDirectos(null);
+    if (selectJefeDirecto) selectJefeDirecto.value = "";
+
     grupoPin.style.display = "block";
     inputPin.required = true;
 
@@ -567,6 +573,8 @@ async function abrirModalEditar(idEmpleado) {
 
         formEmpleado.reset();
 
+        llenarSelectJefesDirectos(empleado.idEmpleado);
+
         inputIdEmpleado.value =
             empleado.idEmpleado;
 
@@ -581,6 +589,11 @@ async function abrirModalEditar(idEmpleado) {
 
         selectHorarioLaboral.value =
             empleado.idHorarioLaboral ?? "";
+
+        if (selectJefeDirecto) {
+            selectJefeDirecto.value =
+                empleado.idJefeDirecto ?? "";
+        }
 
         inputNumeroINSS.value =
             empleado.numeroINSS ?? "";
@@ -708,6 +721,11 @@ function obtenerDatosFormulario() {
         idHorarioLaboral:
             selectHorarioLaboral.value
                 ? Number(selectHorarioLaboral.value)
+                : null,
+
+        idJefeDirecto:
+            selectJefeDirecto?.value
+                ? Number(selectJefeDirecto.value)
                 : null,
 
         codigoEmpleado:
@@ -1001,6 +1019,23 @@ function llenarSelectHorariosLaborales() {
         opcion.textContent = horario.nombre;
         selectHorarioLaboral.appendChild(opcion);
     });
+}
+
+function llenarSelectJefesDirectos(idEmpleadoExcluir) {
+    if (!selectJefeDirecto) return;
+
+    selectJefeDirecto.innerHTML = `
+        <option value="">Sin jefe directo (Opcional)</option>
+    `;
+
+    empleados
+        .filter(emp => emp.activo && (!idEmpleadoExcluir || emp.idEmpleado !== Number(idEmpleadoExcluir)))
+        .forEach(emp => {
+            const opcion = document.createElement("option");
+            opcion.value = emp.idEmpleado;
+            opcion.textContent = `${emp.nombres} ${emp.apellidos} (${emp.codigoEmpleado})`;
+            selectJefeDirecto.appendChild(opcion);
+        });
 }
 
 function actualizarContador() {

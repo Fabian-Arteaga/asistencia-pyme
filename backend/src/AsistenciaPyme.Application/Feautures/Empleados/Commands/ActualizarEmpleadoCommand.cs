@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Features.Empleados.DTOs;
+using AsistenciaPyme.Application.Features.Empleados.DTOs;
 using MediatR;
 using System.Text.Json.Serialization;
 
@@ -15,6 +15,8 @@ public class ActualizarEmpleadoCommand
     public int? IdDepartamento { get; set; }
 
     public int? IdHorarioLaboral { get; set; }
+
+    public int? IdJefeDirecto { get; set; }
 
     public string CodigoEmpleado { get; set; } = string.Empty;
 

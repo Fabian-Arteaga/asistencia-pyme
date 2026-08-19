@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Domain.Entities;
+using AsistenciaPyme.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -26,6 +26,9 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
 
             builder.Property(e => e.IdHorarioLaboral)
                 .HasColumnName("id_horario_laboral");
+
+            builder.Property(e => e.IdJefeDirecto)
+                .HasColumnName("id_jefe_directo");
 
             builder.Property(e => e.CodigoEmpleado)
                 .HasColumnName("codigo_empleado")
@@ -107,6 +110,11 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Configurations
             builder.HasOne(e => e.HorarioLaboral)
                 .WithMany(h => h.Empleados)
                 .HasForeignKey(e => e.IdHorarioLaboral)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.JefeDirecto)
+                .WithMany(j => j.Subordinados)
+                .HasForeignKey(e => e.IdJefeDirecto)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(e => e.NumeroINSS)

@@ -10,6 +10,7 @@
   <body>
     <div id="sidebarContainer"></div>
     <div id="topbarContainer"></div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <main class="contenido-principal">
       <div class="pagina-contenido">
@@ -22,7 +23,7 @@
         </section>
 
         <section class="panel-embargos">
-          <div id="mensajeEmbargos" class="mensaje" role="alert" aria-live="polite"></div>
+          <div id="mensajeEmbargos" class="mensaje mensaje--oculto" role="alert" aria-live="polite"></div>
 
           <div class="acciones-superiores">
             <button type="button" id="btnActualizarEmbargos" class="boton boton--secundario">Actualizar</button>
@@ -42,7 +43,7 @@
                   <th>Estado</th>
                   <th>Referencia</th>
                   <th>Observación</th>
-                  <th>Acciones</th>
+                  <th class="columna-acciones">Acciones</th>
                 </tr>
               </thead>
               <tbody id="tablaEmbargosBody"></tbody>
@@ -55,7 +56,7 @@
     </main>
 
     <div id="modalEmbargo" class="modal modal--oculto" aria-hidden="true">
-      <div class="modal__fondo"></div>
+      <div id="modalFondo" class="modal__fondo"></div>
       <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalEmbargo">
         <div class="modal__encabezado">
           <h3 id="tituloModalEmbargo">Nuevo embargo</h3>

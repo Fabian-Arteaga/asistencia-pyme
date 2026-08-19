@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace AsistenciaPyme.Application.Features.Empleados.Commands;
 
@@ -9,6 +9,8 @@ public class CrearEmpleadoCommand : IRequest<int>
     public int? IdDepartamento { get; set; }
 
     public int? IdHorarioLaboral { get; set; }
+
+    public int? IdJefeDirecto { get; set; }
 
     public string CodigoEmpleado { get; set; } = string.Empty;
 

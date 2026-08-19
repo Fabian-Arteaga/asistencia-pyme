@@ -7,6 +7,7 @@ const tbody = document.getElementById("tablaEmbargosBody");
 const contenedor = document.getElementById("contenedorTabla");
 const sinResultados = document.getElementById("sinResultados");
 const modal = document.getElementById("modalEmbargo");
+const modalFondo = document.getElementById("modalFondo");
 const btnNuevo = document.getElementById("btnNuevoEmbargo");
 const btnActualizar = document.getElementById("btnActualizarEmbargos");
 const btnCerrarModal = document.getElementById("btnCerrarModalEmbargo");
@@ -46,6 +47,7 @@ function configurarEventos() {
     btnActualizar.addEventListener("click", cargarDatos);
     btnCerrarModal.addEventListener("click", cerrarModal);
     btnCancelar.addEventListener("click", cerrarModal);
+    modalFondo?.addEventListener("click", cerrarModal);
     formEmbargo.addEventListener("submit", guardarEmbargo);
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && !modal.classList.contains("modal--oculto")) {
@@ -97,7 +99,7 @@ function renderizarEmbargos(lista) {
         const empleado = empleados.find((item) => Number(item.idEmpleado ?? item.IdEmpleado) === Number(embargo.idEmpleado));
         const nombreCompleto = empleado ? `${empleado.nombres ?? ""} ${empleado.apellidos ?? ""}` : "-";
         const filaHtml = `
-            <td>${escapeHtml(nombreCompleto)}</td>
+            <td><strong>${escapeHtml(nombreCompleto)}</strong></td>
             <td>${tipoCalculoTexto(embargo.tipoCalculo)}</td>
             <td>${formatearMoneda(embargo.monto)}</td>
             <td>${formatearPorcentaje(embargo.porcentaje)}</td>
@@ -109,8 +111,8 @@ function renderizarEmbargos(lista) {
             <td>${escapeHtml(embargo.observacion || "-")}</td>
             <td>
                 <div class="celda-acciones">
-                    <button type="button" class="boton boton--secundario" data-accion="editar" data-id="${embargo.idEmbargo}">Editar</button>
-                    <button type="button" class="boton ${embargo.activo ? "boton--desactivar" : "boton--primario"}" data-accion="estado" data-id="${embargo.idEmbargo}" data-activo="${embargo.activo ? "true" : "false"}">${embargo.activo ? "Desactivar" : "Activar"}</button>
+                    <button type="button" class="boton-tabla boton-tabla--editar" data-accion="editar" data-id="${embargo.idEmbargo}">Editar</button>
+                    <button type="button" class="boton-tabla ${embargo.activo ? "boton-tabla--desactivar" : "boton-tabla--activar"}" data-accion="estado" data-id="${embargo.idEmbargo}" data-activo="${embargo.activo ? "true" : "false"}">${embargo.activo ? "Desactivar" : "Activar"}</button>
                 </div>
             </td>
         `;

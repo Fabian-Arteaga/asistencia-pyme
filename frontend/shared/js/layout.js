@@ -75,7 +75,7 @@ function renderizarSidebar() {
                 </a>
 
                 <a
-                    href="../../modules/cargos/cargos.html"
+                    href="../cargos/cargos.html"
                     class="menu-link"
                     data-menu="cargos"
                 >
@@ -87,7 +87,7 @@ function renderizarSidebar() {
                 </a>
 
                 <a
-                    href="../../modules/departamentos/departamentos.html"
+                    href="../departamentos/departamentos.html"
                     class="menu-link"
                     data-menu="departamentos"
                 >
@@ -99,7 +99,7 @@ function renderizarSidebar() {
                 </a>
 
                 <a
-                    href="../../modules/horarios-laborales/horarios-laborales.html"
+                    href="../horarios-laborales/horarios-laborales.html"
                     class="menu-link"
                     data-menu="horarios"
                 >
@@ -132,6 +132,18 @@ function renderizarSidebar() {
                     </span>
 
                     <span>Vacaciones</span>
+                </a>
+
+                <a
+                    href="../evaluacion-desempeno/evaluacion-desempeno.html"
+                    class="menu-link"
+                    data-menu="evaluacion-desempeno"
+                >
+                    <span class="menu-link__icono">
+                        ED
+                    </span>
+
+                    <span>Evaluación desempeño</span>
                 </a>
 
                 <a

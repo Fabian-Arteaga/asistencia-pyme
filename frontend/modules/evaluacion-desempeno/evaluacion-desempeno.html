@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsistenciaPyme | Evaluación de Desempeño 360°</title>
+    <link rel="stylesheet" href="../../shared/css/layout.css">
+    <link rel="stylesheet" href="./evaluacion-desempeno.css">
+</head>
+<body>
+    <div id="sidebarContainer"></div>
+    <div id="topbarContainer"></div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="contenido-principal">
+        <div class="pagina-contenido">
+            <header class="encabezado-pagina">
+                <div>
+                    <h2>Evaluación de Desempeño 360°</h2>
+                    <p>Gestión semestral de evaluaciones, ponderaciones configurables, autoevaluación, jefes y subordinados.</p>
+                </div>
+                <div class="acciones-encabezado">
+                    <button type="button" id="btnAbrirAsignar" class="boton boton--primario">
+                        + Asignar Evaluación
+                    </button>
+                    <button type="button" id="btnAbrirNuevoPeriodo" class="boton boton--secundario">
+                        + Nuevo Período
+                    </button>
+                </div>
+            </header>
+
+            <div id="mensajeAlerta" class="mensaje mensaje--oculto" role="alert" aria-live="polite"></div>
+
+            <!-- Navegación por pestañas -->
+            <nav class="pestanas-navegacion" aria-label="Secciones de Evaluación de Desempeño">
+                <button type="button" class="pestana-btn pestana-btn--activa" data-pestana="evaluaciones">
+                    Evaluaciones 360°
+                </button>
+                <button type="button" class="pestana-btn" data-pestana="periodos">
+                    Períodos Semestrales
+                </button>
+                <button type="button" class="pestana-btn" data-pestana="ponderaciones">
+                    Ponderaciones y Checklist
+                </button>
+            </nav>
+
+            <!-- PESTAÑA 1: Evaluaciones 360° -->
+            <section id="seccionEvaluaciones" class="seccion-pestana seccion-pestana--activa">
+                <div class="panel-modulo">
+                    <div class="barra-filtros">
+                        <div class="campo-filtro">
+                            <label for="filtroPeriodo">Período:</label>
+                            <select id="filtroPeriodo">
+                                <option value="">Todos los períodos</option>
+                            </select>
+                        </div>
+                        <div class="campo-filtro">
+                            <label for="filtroDepartamento">Departamento:</label>
+                            <select id="filtroDepartamento">
+                                <option value="">Todos los departamentos</option>
+                            </select>
+                        </div>
+                        <div class="campo-filtro">
+                            <label for="filtroEstado">Estado:</label>
+                            <select id="filtroEstado">
+                                <option value="">Todos los estados</option>
+                                <option value="1">Pendiente</option>
+                                <option value="2">En proceso</option>
+                                <option value="3">Completada</option>
+                            </select>
+                        </div>
+                        <div class="campo-filtro">
+                            <label for="filtroTipo">Perspectiva:</label>
+                            <select id="filtroTipo">
+                                <option value="">Todas las perspectivas</option>
+                                <option value="1">Autoevaluación</option>
+                                <option value="2">Jefe Directo</option>
+                                <option value="3">Subordinado</option>
+                            </select>
+                        </div>
+                        <div class="campo-filtro campo-filtro--buscar">
+                            <label for="filtroBuscar">Buscar colaborador:</label>
+                            <input type="text" id="filtroBuscar" placeholder="Nombre o código...">
+                        </div>
+                        <div class="campo-filtro campo-filtro--boton">
+                            <button type="button" id="btnFiltrarEvaluaciones" class="boton boton--secundario">Filtrar</button>
+                        </div>
+                    </div>
+
+                    <div id="contenedorTablaEvaluaciones" class="tabla-contenedor">
+                        <table class="tabla-principal">
+                            <thead>
+                                <tr>
+                                    <th>Colaborador Evaluado</th>
+                                    <th>Cargo / Dpto.</th>
+                                    <th>Evaluador</th>
+                                    <th>Perspectiva</th>
+                                    <th>Período</th>
+                                    <th>Estado</th>
+                                    <th>Puntaje</th>
+                                    <th>Clasificación</th>
+                                    <th class="columna-acciones">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaEvaluacionesBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="sinEvaluaciones" class="estado-tabla estado-tabla--oculto">No se encontraron evaluaciones registradas con los filtros seleccionados.</div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA 2: Períodos Semestrales -->
+            <section id="seccionPeriodos" class="seccion-pestana">
+                <div class="panel-modulo">
+                    <div class="encabezado-panel-interno">
+                        <div>
+                            <h3>Gestión de Períodos Semestrales</h3>
+                            <p>Defina los ciclos semestrales de evaluación de desempeño para la organización.</p>
+                        </div>
+                        <button type="button" id="btnCrearPeriodoDirecto" class="boton boton--primario">+ Crear Período</button>
+                    </div>
+
+                    <div id="contenedorTablaPeriodos" class="tabla-contenedor">
+                        <table class="tabla-principal">
+                            <thead>
+                                <tr>
+                                    <th>Período</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Fin</th>
+                                    <th>Estado</th>
+                                    <th>Total Eval.</th>
+                                    <th>Completadas</th>
+                                    <th>Pendientes</th>
+                                    <th class="columna-acciones">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPeriodosBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="sinPeriodos" class="estado-tabla estado-tabla--oculto">No hay períodos semestrales registrados.</div>
+                </div>
+            </section>
+
+            <!-- PESTAÑA 3: Ponderaciones y Checklist -->
+            <section id="seccionPonderaciones" class="seccion-pestana">
+                <div class="panel-modulo">
+                    <div class="encabezado-panel-interno">
+                        <div>
+                            <h3>Configuración de Ponderaciones de Categorías</h3>
+                            <p>Establezca el peso porcentual de cada categoría en la nota final. <strong>La suma total debe ser exactamente 100%.</strong></p>
+                        </div>
+                    </div>
+
+                    <form id="formPonderaciones" class="formulario-ponderaciones">
+                        <div id="gridPonderaciones" class="grid-ponderaciones">
+                            <!-- Inyectado dinámicamente con las 7 categorías -->
+                        </div>
+
+                        <div class="barra-total-ponderacion">
+                            <div class="indicador-suma">
+                                <span>Suma total de ponderaciones:</span>
+                                <strong id="totalSumaPonderacion">100.00%</strong>
+                            </div>
+                            <button type="submit" id="btnGuardarPonderaciones" class="boton boton--primario">
+                                Guardar Ponderaciones
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="separador-seccion">
+
+                    <div class="encabezado-panel-interno">
+                        <div>
+                            <h3>Checklist de Criterios y Preguntas por Categoría</h3>
+                            <p>Revise o personalice las preguntas evaluadas en escala de 1 a 5 para cada una de las 7 categorías.</p>
+                        </div>
+                        <button type="button" id="btnNuevoCriterio" class="boton boton--secundario">+ Agregar Criterio</button>
+                    </div>
+
+                    <div id="contenedorChecklistCategorias" class="lista-acordeon-categorias">
+                        <!-- Inyectado dinámicamente -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL 1: Asignar Evaluación 360° -->
+    <div id="modalAsignar" class="modal modal--oculto" aria-hidden="true">
+        <div class="modal__fondo" data-cerrar="modalAsignar"></div>
+        <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalAsignar">
+            <div class="modal__encabezado">
+                <h3 id="tituloModalAsignar">Asignar Evaluación 360°</h3>
+                <button type="button" class="modal__cerrar" data-cerrar="modalAsignar" aria-label="Cerrar">×</button>
+            </div>
+            <form id="formAsignarEvaluacion" novalidate>
+                <div class="formulario-grid">
+                    <div class="campo-formulario">
+                        <label for="asignarPeriodo">Período Semestral *</label>
+                        <select id="asignarPeriodo" required></select>
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="asignarTipoEvaluador">Perspectiva de Evaluación *</label>
+                        <select id="asignarTipoEvaluador" required>
+                            <option value="1">Autoevaluación (El mismo colaborador)</option>
+                            <option value="2">Jefe Directo (Superior jerárquico)</option>
+                            <option value="3">Subordinado (Colaborador a cargo)</option>
+                        </select>
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="asignarEmpleadoEvaluado">Colaborador a Evaluar *</label>
+                        <select id="asignarEmpleadoEvaluado" required></select>
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="asignarEvaluador">Evaluador Asignado *</label>
+                        <select id="asignarEvaluador" required></select>
+                    </div>
+                    <div class="campo-formulario campo-formulario--completo info-jerarquia" id="infoJerarquia">
+                        <!-- Información de jerarquía detectada -->
+                    </div>
+                </div>
+                <div class="acciones-formulario">
+                    <button type="button" class="boton boton--secundario" data-cerrar="modalAsignar">Cancelar</button>
+                    <button type="submit" id="btnSubmitAsignar" class="boton boton--primario">Asignar Evaluación</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- MODAL 2: Crear / Editar Período -->
+    <div id="modalPeriodo" class="modal modal--oculto" aria-hidden="true">
+        <div class="modal__fondo" data-cerrar="modalPeriodo"></div>
+        <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalPeriodo">
+            <div class="modal__encabezado">
+                <h3 id="tituloModalPeriodo">Período de Evaluación</h3>
+                <button type="button" class="modal__cerrar" data-cerrar="modalPeriodo" aria-label="Cerrar">×</button>
+            </div>
+            <form id="formPeriodo" novalidate>
+                <input type="hidden" id="idPeriodoModal">
+                <div class="formulario-grid">
+                    <div class="campo-formulario campo-formulario--completo">
+                        <label for="nombrePeriodo">Nombre del Período *</label>
+                        <input type="text" id="nombrePeriodo" placeholder="Ej: Evaluación I Semestre 2026" required maxlength="100">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="fechaInicioPeriodo">Fecha de Inicio *</label>
+                        <input type="date" id="fechaInicioPeriodo" required>
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="fechaFinPeriodo">Fecha de Cierre *</label>
+                        <input type="date" id="fechaFinPeriodo" required>
+                    </div>
+                </div>
+                <div class="acciones-formulario">
+                    <button type="button" class="boton boton--secundario" data-cerrar="modalPeriodo">Cancelar</button>
+                    <button type="submit" id="btnSubmitPeriodo" class="boton boton--primario">Guardar Período</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- MODAL 3: Cuestionario / Responder Evaluación (Checklist 7 Categorías Escala 1-5) -->
+    <div id="modalEvaluar" class="modal modal--oculto" aria-hidden="true">
+        <div class="modal__fondo" data-cerrar="modalEvaluar"></div>
+        <section class="modal__contenido modal__contenido--grande" role="dialog" aria-modal="true" aria-labelledby="tituloModalEvaluar">
+            <div class="modal__encabezado">
+                <div>
+                    <h3 id="tituloModalEvaluar">Responder Evaluación de Desempeño</h3>
+                    <div id="subtituloModalEvaluar" class="subtitulo-modal"></div>
+                </div>
+                <button type="button" class="modal__cerrar" data-cerrar="modalEvaluar" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal__cuerpo-scroll">
+                <!-- Leyenda explicativa de escala -->
+                <div class="tarjeta-guia-escala">
+                    <strong>Escala de Calificación (1 a 5):</strong>
+                    <div class="items-escala">
+                        <span class="badge-escala badge-escala--1">1 = Muy deficiente</span>
+                        <span class="badge-escala badge-escala--2">2 = Deficiente</span>
+                        <span class="badge-escala badge-escala--3">3 = Aceptable</span>
+                        <span class="badge-escala badge-escala--4">4 = Bueno</span>
+                        <span class="badge-escala badge-escala--5">5 = Excelente</span>
+                    </div>
+                </div>
+
+                <form id="formCuestionarioEvaluacion" novalidate>
+                    <input type="hidden" id="idEvaluacionCuestionario">
+                    
+                    <div id="contenedorCuestionarioCategorias" class="cuestionario-categorias">
+                        <!-- Categorías y preguntas inyectadas dinámicamente -->
+                    </div>
+
+                    <div class="campo-formulario campo-formulario--completo seccion-observaciones">
+                        <label for="observacionesGenerales">Observaciones Generales y Retroalimentación:</label>
+                        <textarea id="observacionesGenerales" rows="3" placeholder="Comentarios generales sobre el desempeño del colaborador en el período..."></textarea>
+                    </div>
+
+                    <div class="resumen-puntaje-vivo" id="resumenPuntajeVivo">
+                        <div>
+                            <span>Puntaje Ponderado Estimado:</span>
+                            <strong id="puntajeEstimadoTexto">-- / 100</strong>
+                        </div>
+                        <div id="clasificacionEstimadaBadge" class="clasificacion-badge">--</div>
+                    </div>
+
+                    <div class="acciones-formulario acciones-formulario--evaluacion">
+                        <button type="button" class="boton boton--secundario" data-cerrar="modalEvaluar">Cerrar</button>
+                        <button type="button" id="btnGuardarBorrador" class="boton boton--secundario">Guardar Borrador</button>
+                        <button type="submit" id="btnFinalizarEvaluacion" class="boton boton--primario">Finalizar y Calificar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL 4: Reporte Consolidado 360° -->
+    <div id="modalConsolidado" class="modal modal--oculto" aria-hidden="true">
+        <div class="modal__fondo" data-cerrar="modalConsolidado"></div>
+        <section class="modal__contenido modal__contenido--grande" role="dialog" aria-modal="true" aria-labelledby="tituloModalConsolidado">
+            <div class="modal__encabezado">
+                <div>
+                    <h3 id="tituloModalConsolidado">Consolidado 360° de Desempeño</h3>
+                    <div id="subtituloConsolidado" class="subtitulo-modal"></div>
+                </div>
+                <button type="button" class="modal__cerrar" data-cerrar="modalConsolidado" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal__cuerpo-scroll" id="cuerpoConsolidado360">
+                <!-- Inyectado dinámicamente: Tarjetas de perspectivas, gauge consolidado, desglose por categorías y feedback -->
+            </div>
+            <div class="acciones-formulario">
+                <button type="button" class="boton boton--secundario" data-cerrar="modalConsolidado">Cerrar</button>
+                <button type="button" id="btnImprimirConsolidado" class="boton boton--primario">Imprimir / Exportar</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL 5: Historial Semestral del Empleado -->
+    <div id="modalHistorial" class="modal modal--oculto" aria-hidden="true">
+        <div class="modal__fondo" data-cerrar="modalHistorial"></div>
+        <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalHistorial">
+            <div class="modal__encabezado">
+                <div>
+                    <h3 id="tituloModalHistorial">Historial de Evaluaciones Semestrales</h3>
+                    <div id="subtituloHistorial" class="subtitulo-modal"></div>
+                </div>
+                <button type="button" class="modal__cerrar" data-cerrar="modalHistorial" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal__cuerpo-scroll">
+                <div id="contenedorTablaHistorial" class="tabla-contenedor">
+                    <table class="tabla-principal">
+                        <thead>
+                            <tr>
+                                <th>Período</th>
+                                <th>Fechas</th>
+                                <th>Puntaje Consolidado</th>
+                                <th>Clasificación</th>
+                                <th>Eval. Realizadas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaHistorialBody"></tbody>
+                    </table>
+                </div>
+                <div id="sinHistorial" class="estado-tabla estado-tabla--oculto">No hay evaluaciones históricas para este colaborador.</div>
+            </div>
+            <div class="acciones-formulario">
+                <button type="button" class="boton boton--secundario" data-cerrar="modalHistorial">Cerrar</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL 6: Crear/Editar Criterio -->
+    <div id="modalCriterio" class="modal modal--oculto" aria-hidden="true">
+        <div class="modal__fondo" data-cerrar="modalCriterio"></div>
+        <section class="modal__contenido" role="dialog" aria-modal="true" aria-labelledby="tituloModalCriterio">
+            <div class="modal__encabezado">
+                <h3 id="tituloModalCriterio">Criterio de Evaluación</h3>
+                <button type="button" class="modal__cerrar" data-cerrar="modalCriterio" aria-label="Cerrar">×</button>
+            </div>
+            <form id="formCriterio" novalidate>
+                <input type="hidden" id="idCriterioModal">
+                <div class="formulario-grid">
+                    <div class="campo-formulario campo-formulario--completo">
+                        <label for="categoriaCriterioSelect">Categoría *</label>
+                        <select id="categoriaCriterioSelect" required></select>
+                    </div>
+                    <div class="campo-formulario campo-formulario--completo">
+                        <label for="textoCriterio">Texto / Pregunta del Criterio *</label>
+                        <textarea id="textoCriterio" rows="3" placeholder="Redacte el criterio a evaluar..." required maxlength="250"></textarea>
+                    </div>
+                    <div class="campo-formulario campo-formulario--completo">
+                        <label for="descripcionCriterio">Descripción / Guía de Calificación (Opcional)</label>
+                        <input type="text" id="descripcionCriterio" placeholder="Detalle complementario para orientar al evaluador..." maxlength="250">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="ordenCriterio">Orden de Visualización</label>
+                        <input type="number" id="ordenCriterio" min="1" step="1" value="1">
+                    </div>
+                </div>
+                <div class="acciones-formulario">
+                    <button type="button" class="boton boton--secundario" data-cerrar="modalCriterio">Cancelar</button>
+                    <button type="submit" id="btnSubmitCriterio" class="boton boton--primario">Guardar Criterio</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script type="module" src="./evaluacion-desempeno.js"></script>
+</body>
+</html>

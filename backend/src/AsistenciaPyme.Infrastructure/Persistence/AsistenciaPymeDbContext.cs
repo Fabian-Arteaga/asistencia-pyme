@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Domain.Entities;
+using AsistenciaPyme.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -54,6 +54,16 @@ namespace AsistenciaPyme.Infrastructure.Persistence
         public DbSet<DispositivoMarcaje> DispositivosMarcaje => Set<DispositivoMarcaje>();
 
         public DbSet<VerificacionPresencia> VerificacionesPresencia => Set<VerificacionPresencia>();
+
+        public DbSet<PeriodoEvaluacion> PeriodosEvaluacion => Set<PeriodoEvaluacion>();
+
+        public DbSet<CategoriaEvaluacion> CategoriasEvaluacion => Set<CategoriaEvaluacion>();
+
+        public DbSet<CriterioEvaluacion> CriteriosEvaluacion => Set<CriterioEvaluacion>();
+
+        public DbSet<EvaluacionDesempeno> EvaluacionesDesempeno => Set<EvaluacionDesempeno>();
+
+        public DbSet<DetalleEvaluacionDesempeno> DetallesEvaluacionDesempeno => Set<DetalleEvaluacionDesempeno>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

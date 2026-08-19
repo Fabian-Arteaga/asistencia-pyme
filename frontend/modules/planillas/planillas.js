@@ -19,10 +19,9 @@ import {
     enviarPlanillaRevision,
     cerrarPlanilla,
     pagarPlanilla,
-    anularPlanilla
-} from "../planillas/planillas.services.js";
-
-import { obtenerDepartamentos } from "../planillas/planillas.services.js";
+    anularPlanilla,
+    obtenerDepartamentos
+} from "./planillas.services.js";
 
 
 const ESTADOS_PLANILLA = {

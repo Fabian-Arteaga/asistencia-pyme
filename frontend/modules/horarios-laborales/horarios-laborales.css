@@ -1,28 +1,422 @@
-.panel-empleados {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 1.25rem;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+.encabezado-pagina {
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.encabezado-pagina h2 {
+    margin-bottom: 5px;
+    color: #1e3f5f;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.encabezado-pagina p {
+    color: #666666;
+    font-size: 14px;
+}
+
+.boton {
+    min-height: 39px;
+    padding: 0 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.boton--primario {
+    color: #ffffff;
+    background-color: #2d608e;
+    border: 1px solid #214b70;
+}
+
+.boton--primario:hover {
+    background-color: #244f76;
+}
+
+.boton--secundario {
+    color: #333333;
+    background-color: #f4f5f6;
+    border: 1px solid #bdc5cc;
+}
+
+.boton--secundario:hover {
+    background-color: #e6e9ec;
+}
+
+.boton:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.panel-empleados,
+.panel-horarios {
+    background-color: #ffffff;
+    border: 1px solid #ccd3d9;
+    border-radius: 3px;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.07);
+}
+
+.herramientas {
+    min-height: 78px;
+    padding: 15px 18px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #d9dee3;
+    flex-wrap: wrap;
+}
+
+.campo-herramienta {
+    width: 100%;
+    max-width: 370px;
+}
+
+.campo-herramienta label {
+    display: block;
+    margin-bottom: 6px;
+    color: #333333;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.campo-herramienta input,
+.campo-herramienta select {
+    width: 100%;
+    height: 39px;
+    padding: 0 12px;
+    color: #303030;
+    font-size: 14px;
+    background-color: #ffffff;
+    border: 1px solid #b8c2cb;
+    border-radius: 3px;
+    outline: none;
+}
+
+.campo-herramienta input:focus,
+.campo-herramienta select:focus {
+    border-color: #2d608e;
+    box-shadow: 0 0 0 2px rgba(45, 96, 142, 0.12);
+}
+
+.herramientas__acciones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.herramientas__acciones span {
+    color: #666666;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-contenedor--oculto {
+    display: none;
+}
+
+.tabla-empleados,
+.tabla-horarios {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-empleados th,
+.tabla-horarios th {
+    padding: 13px 15px;
+    color: #ffffff;
+    font-size: 13px;
+    text-align: left;
+    background-color: #315f88;
+    border-right: 1px solid #47759c;
+}
+
+.tabla-empleados th:last-child,
+.tabla-horarios th:last-child {
+    border-right: none;
+}
+
+.tabla-empleados td,
+.tabla-horarios td {
+    padding: 13px 15px;
+    color: #333333;
+    font-size: 13px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dce1e5;
+}
+
+.tabla-empleados tbody tr:hover,
+.tabla-horarios tbody tr:hover {
+    background-color: #f4f7f9;
+}
+
+.tabla-empleados tbody tr:last-child td,
+.tabla-horarios tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.columna-acciones {
+    width: 200px;
+    text-align: center !important;
 }
 
 .celda-acciones {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+    justify-content: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.boton-tabla {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.boton-tabla--editar {
+    color: #244f76;
+    background-color: #edf4fa;
+    border: 1px solid #9bb8d1;
+}
+
+.boton-tabla--editar:hover {
+    background-color: #dbeaf5;
+}
+
+.boton-tabla--activar {
+    color: #246333;
+    background-color: #e8f4eb;
+    border: 1px solid #9fc4a8;
+}
+
+.boton-tabla--activar:hover {
+    background-color: #d7ebdc;
+}
+
+.boton-tabla--desactivar {
+    color: #8a2e2e;
+    background-color: #f8e7e7;
+    border: 1px solid #d4a3a3;
+}
+
+.boton-tabla--desactivar:hover {
+    background-color: #f0d3d3;
+}
+
+.estado {
+    display: inline-block;
+    min-width: 70px;
+    padding: 5px 9px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 3px;
+}
+
+.estado--activo {
+    color: #236032;
+    background-color: #dceee0;
+    border: 1px solid #a4c9ac;
+}
+
+.estado--inactivo {
+    color: #7e2d2d;
+    background-color: #f3dddd;
+    border: 1px solid #d5a6a6;
+}
+
+.estado-tabla {
+    padding: 35px 20px;
+    color: #666666;
+    font-size: 14px;
+    text-align: center;
+}
+
+.estado-tabla--oculto {
+    display: none;
+}
+
+.mensaje {
+    margin: 15px 18px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.45;
+    border-radius: 3px;
+}
+
+.mensaje--oculto {
+    display: none;
+}
+
+.mensaje--error {
+    display: block;
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #e4afb4;
+}
+
+.mensaje--exito {
+    display: block;
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #a9cfb2;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal--oculto {
+    display: none;
+}
+
+.modal__fondo {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.48);
+}
+
+.modal__contenido {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 540px;
+    background-color: #ffffff;
+    border: 1px solid #aeb7bf;
+    border-radius: 4px;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+}
+
+.modal__encabezado {
+    min-height: 58px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f1f3f5;
+    border-bottom: 1px solid #ccd3d9;
+}
+
+.modal__encabezado h3 {
+    color: #1e3f5f;
+    font-size: 19px;
+}
+
+.modal__cerrar {
+    width: 35px;
+    height: 35px;
+    color: #555555;
+    font-size: 27px;
+    line-height: 1;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+.modal__cerrar:hover {
+    color: #9b2e2e;
+}
+
+#formHorario {
+    padding: 21px;
 }
 
 .formulario-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
 
 .campo-formulario--completo {
     grid-column: 1 / -1;
 }
 
-@media (max-width: 640px) {
+.campo-formulario {
+    margin-bottom: 5px;
+}
+
+.campo-formulario label {
+    display: block;
+    margin-bottom: 7px;
+    color: #292929;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.campo-formulario input,
+.campo-formulario textarea,
+.campo-formulario select {
+    width: 100%;
+    padding: 10px 12px;
+    color: #2e2e2e;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    background-color: #ffffff;
+    border: 1px solid #b7c1ca;
+    border-radius: 3px;
+    outline: none;
+}
+
+.campo-formulario input {
+    height: 43px;
+}
+
+.campo-formulario input:focus,
+.campo-formulario textarea:focus,
+.campo-formulario select:focus {
+    border-color: #2d608e;
+    box-shadow: 0 0 0 2px rgba(45, 96, 142, 0.12);
+}
+
+.modal__acciones {
+    margin-top: 20px;
+    padding-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    border-top: 1px solid #dce1e5;
+}
+
+@media (max-width: 768px) {
+    .encabezado-pagina {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .herramientas {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .campo-herramienta {
+        max-width: 100%;
+    }
+
     .formulario-grid {
         grid-template-columns: 1fr;
     }

@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Domain.Enums;
+using AsistenciaPyme.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,7 +46,15 @@ namespace AsistenciaPyme.Domain.Entities
 
         public DateTime? FechaActualizacion { get; set; }
 
+        // Jerarquía organizacional (Jefe directo y subordinados)
+        public int? IdJefeDirecto { get; set; }
+
         public Cargo Cargo { get; set; } = null!;
+
+        public Empleado? JefeDirecto { get; set; }
+
+        public ICollection<Empleado> Subordinados { get; set; }
+            = new List<Empleado>();
 
         // New relations
         public Departamento? Departamento { get; set; }
@@ -68,5 +76,11 @@ namespace AsistenciaPyme.Domain.Entities
 
         public ICollection<Planilla> Planillas { get; set; }
             = new List<Planilla>();
+
+        public ICollection<EvaluacionDesempeno> EvaluacionesRecibidas { get; set; }
+            = new List<EvaluacionDesempeno>();
+
+        public ICollection<EvaluacionDesempeno> EvaluacionesRealizadas { get; set; }
+            = new List<EvaluacionDesempeno>();
     }
 }

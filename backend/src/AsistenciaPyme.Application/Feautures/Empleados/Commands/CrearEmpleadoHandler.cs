@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Domain.Entities;
 using AsistenciaPyme.Domain.Enums;
 using MediatR;
@@ -102,11 +102,23 @@ public class CrearEmpleadoHandler
             }
         }
 
+        if (request.IdJefeDirecto.HasValue)
+        {
+            bool jefeValido = await _context.Empleados
+                .AnyAsync(e => e.IdEmpleado == request.IdJefeDirecto.Value && e.Estado == EstadoEmpleado.Activo, cancellationToken);
+
+            if (!jefeValido)
+            {
+                throw new InvalidOperationException("El jefe directo seleccionado no existe o está inactivo.");
+            }
+        }
+
         var empleado = new Empleado
         {
             IdCargo = request.IdCargo,
             IdDepartamento = request.IdDepartamento,
             IdHorarioLaboral = request.IdHorarioLaboral,
+            IdJefeDirecto = request.IdJefeDirecto,
             CodigoEmpleado = codigoEmpleado,
             PinHash = _pinHasher.CrearHash(request.Pin),
             Identificacion = identificacion,
@@ -132,19 +144,18 @@ public class CrearEmpleadoHandler
             FechaCreacion = DateTime.UtcNow
         };
 
-        await _context.Empleados.AddAsync(
-            empleado,
-            cancellationToken);
-
         if (empleado.IdDepartamento.HasValue)
         {
-            _context.EmpleadoDepartamentoHistorials.Add(new EmpleadoDepartamentoHistorial
+            empleado.DepartamentoHistorial.Add(new EmpleadoDepartamentoHistorial
             {
-                IdEmpleado = empleado.IdEmpleado,
                 IdDepartamento = empleado.IdDepartamento.Value,
                 FechaInicio = DateTime.UtcNow
             });
         }
+
+        await _context.Empleados.AddAsync(
+            empleado,
+            cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

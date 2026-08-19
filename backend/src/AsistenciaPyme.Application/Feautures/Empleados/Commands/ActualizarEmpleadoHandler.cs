@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Application.Features.Empleados.DTOs;
 using AsistenciaPyme.Domain.Entities;
 using AsistenciaPyme.Domain.Enums;
@@ -113,11 +113,28 @@ public class ActualizarEmpleadoHandler
             }
         }
 
+        if (request.IdJefeDirecto.HasValue)
+        {
+            if (request.IdJefeDirecto.Value == request.IdEmpleado)
+            {
+                throw new InvalidOperationException("Un empleado no puede ser su propio jefe directo.");
+            }
+
+            bool jefeValido = await _context.Empleados
+                .AnyAsync(e => e.IdEmpleado == request.IdJefeDirecto.Value && e.Estado == EstadoEmpleado.Activo, cancellationToken);
+
+            if (!jefeValido)
+            {
+                throw new InvalidOperationException("El jefe directo seleccionado no existe o está inactivo.");
+            }
+        }
+
         var departamentoAnterior = empleado.IdDepartamento;
 
         empleado.IdCargo = request.IdCargo;
         empleado.IdDepartamento = request.IdDepartamento;
         empleado.IdHorarioLaboral = request.IdHorarioLaboral;
+        empleado.IdJefeDirecto = request.IdJefeDirecto;
         empleado.CodigoEmpleado = codigoEmpleado;
         empleado.Identificacion = identificacion;
         empleado.NumeroINSS = string.IsNullOrWhiteSpace(request.NumeroINSS) ? null : request.NumeroINSS.Trim();
@@ -172,15 +189,29 @@ public class ActualizarEmpleadoHandler
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        string? nombreJefe = null;
+        if (empleado.IdJefeDirecto.HasValue)
+        {
+            var jefe = await _context.Empleados
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.IdEmpleado == empleado.IdJefeDirecto.Value, cancellationToken);
+            if (jefe is not null)
+            {
+                nombreJefe = $"{jefe.Nombres} {jefe.Apellidos}".Trim();
+            }
+        }
+
         return new EmpleadoDto
         {
             IdEmpleado = empleado.IdEmpleado,
             IdCargo = empleado.IdCargo,
             IdDepartamento = empleado.IdDepartamento,
             IdHorarioLaboral = empleado.IdHorarioLaboral,
+            IdJefeDirecto = empleado.IdJefeDirecto,
             NombreCargo = cargo.Nombre,
             NombreDepartamento = empleado.Departamento?.Nombre,
             NombreHorarioLaboral = empleado.HorarioLaboral?.Nombre,
+            NombreJefeDirecto = nombreJefe,
             CodigoEmpleado = empleado.CodigoEmpleado,
             Identificacion = empleado.Identificacion,
             NumeroINSS = empleado.NumeroINSS,

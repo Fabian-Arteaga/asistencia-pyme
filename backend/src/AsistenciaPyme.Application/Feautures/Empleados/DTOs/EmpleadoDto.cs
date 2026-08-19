@@ -1,4 +1,4 @@
-﻿namespace AsistenciaPyme.Application.Features.Empleados.DTOs;
+namespace AsistenciaPyme.Application.Features.Empleados.DTOs;
 
 public class EmpleadoDto
 {
@@ -10,9 +10,13 @@ public class EmpleadoDto
 
     public int? IdHorarioLaboral { get; set; }
 
+    public int? IdJefeDirecto { get; set; }
+
     public string? NombreDepartamento { get; set; }
 
     public string? NombreHorarioLaboral { get; set; }
+
+    public string? NombreJefeDirecto { get; set; }
 
     public string NombreCargo { get; set; } = string.Empty;
 

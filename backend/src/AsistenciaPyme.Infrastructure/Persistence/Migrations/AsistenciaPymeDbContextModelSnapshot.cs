@@ -216,6 +216,131 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.ToTable("cargos", (string)null);
                 });
 
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.CategoriaEvaluacion", b =>
+                {
+                    b.Property<int>("IdCategoriaEvaluacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_categoria_evaluacion");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCategoriaEvaluacion"));
+
+                    b.Property<bool>("Activo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("activo");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("descripcion");
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_actualizacion");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nombre");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("integer")
+                        .HasColumnName("orden");
+
+                    b.Property<decimal>("Ponderacion")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("ponderacion");
+
+                    b.HasKey("IdCategoriaEvaluacion");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("categorias_evaluacion", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            IdCategoriaEvaluacion = 1,
+                            Activo = true,
+                            Descripcion = "Evaluación de la productividad, calidad del trabajo y cumplimiento en tiempos establecidos.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Rendimiento",
+                            Orden = 1,
+                            Ponderacion = 20.00m
+                        },
+                        new
+                        {
+                            IdCategoriaEvaluacion = 2,
+                            Activo = true,
+                            Descripcion = "Grado de consecución de metas individuales y alineación con objetivos del negocio.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Objetivos",
+                            Orden = 2,
+                            Ponderacion = 15.00m
+                        },
+                        new
+                        {
+                            IdCategoriaEvaluacion = 3,
+                            Activo = true,
+                            Descripcion = "Compromiso con las normas, puntualidad, asistencia y cuidado de recursos de la empresa.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Responsabilidad",
+                            Orden = 3,
+                            Ponderacion = 15.00m
+                        },
+                        new
+                        {
+                            IdCategoriaEvaluacion = 4,
+                            Activo = true,
+                            Descripcion = "Conocimientos técnicos, habilidades específicas del puesto y resolución de problemas.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Competencias",
+                            Orden = 4,
+                            Ponderacion = 15.00m
+                        },
+                        new
+                        {
+                            IdCategoriaEvaluacion = 5,
+                            Activo = true,
+                            Descripcion = "Trabajo en equipo, comunicación asertiva, empatía y adaptabilidad a cambios.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Aptitudes",
+                            Orden = 5,
+                            Ponderacion = 10.00m
+                        },
+                        new
+                        {
+                            IdCategoriaEvaluacion = 6,
+                            Activo = true,
+                            Descripcion = "Proactividad, autonomía para proponer mejoras y anticipación a requerimientos.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Iniciativa",
+                            Orden = 6,
+                            Ponderacion = 15.00m
+                        },
+                        new
+                        {
+                            IdCategoriaEvaluacion = 7,
+                            Activo = true,
+                            Descripcion = "Aporte de ideas innovadoras y alternativas eficaces para optimizar procesos.",
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nombre = "Creatividad",
+                            Orden = 7,
+                            Ponderacion = 10.00m
+                        });
+                });
+
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.ConceptoPlanilla", b =>
                 {
                     b.Property<int>("IdConceptoPlanilla")
@@ -378,6 +503,203 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.CriterioEvaluacion", b =>
+                {
+                    b.Property<int>("IdCriterioEvaluacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_criterio_evaluacion");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCriterioEvaluacion"));
+
+                    b.Property<bool>("Activo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("activo");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("descripcion");
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_actualizacion");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("IdCategoriaEvaluacion")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_categoria_evaluacion");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("integer")
+                        .HasColumnName("orden");
+
+                    b.Property<string>("Texto")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("texto");
+
+                    b.HasKey("IdCriterioEvaluacion");
+
+                    b.HasIndex("IdCategoriaEvaluacion");
+
+                    b.ToTable("criterios_evaluacion", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            IdCriterioEvaluacion = 1,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 1,
+                            Orden = 1,
+                            Texto = "Cumple adecuadamente con sus funciones y tareas asignadas."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 2,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 1,
+                            Orden = 2,
+                            Texto = "Mantiene un nivel de productividad y calidad adecuado."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 3,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 1,
+                            Orden = 3,
+                            Texto = "Entrega su trabajo en los tiempos establecidos."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 4,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 2,
+                            Orden = 1,
+                            Texto = "Alcanza los objetivos y metas planteados para el período."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 5,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 2,
+                            Orden = 2,
+                            Texto = "Alinea sus actividades diarias con las prioridades del negocio."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 6,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 3,
+                            Orden = 1,
+                            Texto = "Demuestra puntualidad, asistencia y cumplimiento de horarios."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 7,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 3,
+                            Orden = 2,
+                            Texto = "Cuida adecuadamente las herramientas y recursos de la empresa."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 8,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 3,
+                            Orden = 3,
+                            Texto = "Asume la responsabilidad de sus resultados y decisiones."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 9,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 4,
+                            Orden = 1,
+                            Texto = "Demuestra dominio técnico en los conocimientos de su cargo."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 10,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 4,
+                            Orden = 2,
+                            Texto = "Aplica procedimientos y buenas prácticas en su área."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 11,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 5,
+                            Orden = 1,
+                            Texto = "Trabaja en equipo y colabora activamente con sus compañeros."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 12,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 5,
+                            Orden = 2,
+                            Texto = "Se comunica de forma asertiva, respetuosa y clara."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 13,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 6,
+                            Orden = 1,
+                            Texto = "Actúa con autonomía y proactividad sin esperar indicaciones constantes."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 14,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 6,
+                            Orden = 2,
+                            Texto = "Propone soluciones cuando se presentan problemas o dificultades."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 15,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 7,
+                            Orden = 1,
+                            Texto = "Aporta ideas novedosas para simplificar o mejorar procesos."
+                        },
+                        new
+                        {
+                            IdCriterioEvaluacion = 16,
+                            Activo = true,
+                            FechaCreacion = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdCategoriaEvaluacion = 7,
+                            Orden = 2,
+                            Texto = "Muestra flexibilidad e ingenio ante nuevos retos de trabajo."
+                        });
+                });
+
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.DeduccionPlanilla", b =>
                 {
                     b.Property<int>("IdDeduccionPlanilla")
@@ -493,6 +815,59 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.HasIndex("IdDetallePlanilla");
 
                     b.ToTable("DetallesConceptoPlanilla", (string)null);
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.DetalleEvaluacionDesempeno", b =>
+                {
+                    b.Property<int>("IdDetalleEvaluacionDesempeno")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_detalle_evaluacion_desempeno");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdDetalleEvaluacionDesempeno"));
+
+                    b.Property<string>("Comentario")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("comentario");
+
+                    b.Property<int>("IdCriterioEvaluacion")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_criterio_evaluacion");
+
+                    b.Property<int>("IdEvaluacionDesempeno")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_evaluacion_desempeno");
+
+                    b.Property<string>("NombreCategoriaHistorica")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nombre_categoria_historica");
+
+                    b.Property<decimal>("PonderacionCategoriaHistorica")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("ponderacion_categoria_historica");
+
+                    b.Property<int>("Puntuacion")
+                        .HasColumnType("integer")
+                        .HasColumnName("puntuacion");
+
+                    b.Property<string>("TextoCriterioHistorico")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("texto_criterio_historico");
+
+                    b.HasKey("IdDetalleEvaluacionDesempeno");
+
+                    b.HasIndex("IdCriterioEvaluacion");
+
+                    b.HasIndex("IdEvaluacionDesempeno", "IdCriterioEvaluacion")
+                        .IsUnique();
+
+                    b.ToTable("detalles_evaluacion_desempeno", (string)null);
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.DetallePlanilla", b =>
@@ -790,6 +1165,10 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id_horario_laboral");
 
+                    b.Property<int?>("IdJefeDirecto")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_jefe_directo");
+
                     b.Property<string>("Identificacion")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -834,6 +1213,8 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("IdHorarioLaboral");
 
+                    b.HasIndex("IdJefeDirecto");
+
                     b.HasIndex("Identificacion")
                         .IsUnique();
 
@@ -876,6 +1257,71 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.HasIndex("IdEmpleado");
 
                     b.ToTable("EmpleadoDepartamentoHistorials", (string)null);
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.EvaluacionDesempeno", b =>
+                {
+                    b.Property<int>("IdEvaluacionDesempeno")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_evaluacion_desempeno");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdEvaluacionDesempeno"));
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado");
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_actualizacion");
+
+                    b.Property<DateTime>("FechaAsignacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_asignacion")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime?>("FechaCompletada")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_completada");
+
+                    b.Property<int>("IdEmpleadoEvaluado")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_empleado_evaluado");
+
+                    b.Property<int>("IdEvaluador")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_evaluador");
+
+                    b.Property<int>("IdPeriodoEvaluacion")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_periodo_evaluacion");
+
+                    b.Property<string>("ObservacionesGenerales")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("observaciones_generales");
+
+                    b.Property<decimal?>("PuntajeFinal")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("numeric(5,2)")
+                        .HasColumnName("puntaje_final");
+
+                    b.Property<int>("TipoEvaluador")
+                        .HasColumnType("integer")
+                        .HasColumnName("tipo_evaluador");
+
+                    b.HasKey("IdEvaluacionDesempeno");
+
+                    b.HasIndex("IdEmpleadoEvaluado");
+
+                    b.HasIndex("IdEvaluador");
+
+                    b.HasIndex("IdPeriodoEvaluacion", "IdEmpleadoEvaluado", "IdEvaluador", "TipoEvaluador")
+                        .IsUnique();
+
+                    b.ToTable("evaluaciones_desempeno", (string)null);
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.HoraExtra", b =>
@@ -961,6 +1407,51 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.HasKey("IdHorarioLaboral");
 
                     b.ToTable("HorariosLaborales");
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.PeriodoEvaluacion", b =>
+                {
+                    b.Property<int>("IdPeriodoEvaluacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id_periodo_evaluacion");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdPeriodoEvaluacion"));
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado");
+
+                    b.Property<DateTime?>("FechaActualizacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_actualizacion");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateOnly>("FechaFin")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_fin");
+
+                    b.Property<DateOnly>("FechaInicio")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_inicio");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nombre");
+
+                    b.HasKey("IdPeriodoEvaluacion");
+
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
+                    b.ToTable("periodos_evaluacion", (string)null);
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.Planilla", b =>
@@ -1262,6 +1753,17 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.Navigation("Empleado");
                 });
 
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.CriterioEvaluacion", b =>
+                {
+                    b.HasOne("AsistenciaPyme.Domain.Entities.CategoriaEvaluacion", "Categoria")
+                        .WithMany("Criterios")
+                        .HasForeignKey("IdCategoriaEvaluacion")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Categoria");
+                });
+
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.DeduccionPlanilla", b =>
                 {
                     b.HasOne("AsistenciaPyme.Domain.Entities.DetallePlanilla", "DetallePlanilla")
@@ -1305,6 +1807,25 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.Navigation("ConceptoPlanilla");
 
                     b.Navigation("DetallePlanilla");
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.DetalleEvaluacionDesempeno", b =>
+                {
+                    b.HasOne("AsistenciaPyme.Domain.Entities.CriterioEvaluacion", "Criterio")
+                        .WithMany()
+                        .HasForeignKey("IdCriterioEvaluacion")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AsistenciaPyme.Domain.Entities.EvaluacionDesempeno", "Evaluacion")
+                        .WithMany("Detalles")
+                        .HasForeignKey("IdEvaluacionDesempeno")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Criterio");
+
+                    b.Navigation("Evaluacion");
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.DetallePlanilla", b =>
@@ -1365,11 +1886,18 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                         .HasForeignKey("IdHorarioLaboral")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("AsistenciaPyme.Domain.Entities.Empleado", "JefeDirecto")
+                        .WithMany("Subordinados")
+                        .HasForeignKey("IdJefeDirecto")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Cargo");
 
                     b.Navigation("Departamento");
 
                     b.Navigation("HorarioLaboral");
+
+                    b.Navigation("JefeDirecto");
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.EmpleadoDepartamentoHistorial", b =>
@@ -1389,6 +1917,33 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.Navigation("Departamento");
 
                     b.Navigation("Empleado");
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.EvaluacionDesempeno", b =>
+                {
+                    b.HasOne("AsistenciaPyme.Domain.Entities.Empleado", "EmpleadoEvaluado")
+                        .WithMany("EvaluacionesRecibidas")
+                        .HasForeignKey("IdEmpleadoEvaluado")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AsistenciaPyme.Domain.Entities.Empleado", "Evaluador")
+                        .WithMany("EvaluacionesRealizadas")
+                        .HasForeignKey("IdEvaluador")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AsistenciaPyme.Domain.Entities.PeriodoEvaluacion", "Periodo")
+                        .WithMany("Evaluaciones")
+                        .HasForeignKey("IdPeriodoEvaluacion")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EmpleadoEvaluado");
+
+                    b.Navigation("Evaluador");
+
+                    b.Navigation("Periodo");
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.HoraExtra", b =>
@@ -1498,6 +2053,11 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
                     b.Navigation("Empleados");
                 });
 
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.CategoriaEvaluacion", b =>
+                {
+                    b.Navigation("Criterios");
+                });
+
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.ConceptoPlanilla", b =>
                 {
                     b.Navigation("Detalles");
@@ -1523,16 +2083,32 @@ namespace AsistenciaPyme.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Embargos");
 
+                    b.Navigation("EvaluacionesRealizadas");
+
+                    b.Navigation("EvaluacionesRecibidas");
+
                     b.Navigation("HorasExtras");
 
                     b.Navigation("Planillas");
 
+                    b.Navigation("Subordinados");
+
                     b.Navigation("Vacaciones");
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.EvaluacionDesempeno", b =>
+                {
+                    b.Navigation("Detalles");
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.HorarioLaboral", b =>
                 {
                     b.Navigation("Empleados");
+                });
+
+            modelBuilder.Entity("AsistenciaPyme.Domain.Entities.PeriodoEvaluacion", b =>
+                {
+                    b.Navigation("Evaluaciones");
                 });
 
             modelBuilder.Entity("AsistenciaPyme.Domain.Entities.Planilla", b =>

@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Application.Common.Interfaces;
+using AsistenciaPyme.Application.Common.Interfaces;
 using AsistenciaPyme.Application.Features.Empleados.DTOs;
 using AsistenciaPyme.Domain.Enums;
 using MediatR;
@@ -32,9 +32,11 @@ public class ObtenerEmpleadoPorIdHandler
                 IdCargo = e.IdCargo,
                 IdDepartamento = e.IdDepartamento,
                 IdHorarioLaboral = e.IdHorarioLaboral,
+                IdJefeDirecto = e.IdJefeDirecto,
                 NombreCargo = e.Cargo.Nombre,
                 NombreDepartamento = e.Departamento != null ? e.Departamento.Nombre : null,
                 NombreHorarioLaboral = e.HorarioLaboral != null ? e.HorarioLaboral.Nombre : null,
+                NombreJefeDirecto = e.JefeDirecto != null ? (e.JefeDirecto.Nombres + " " + e.JefeDirecto.Apellidos).Trim() : null,
                 CodigoEmpleado = e.CodigoEmpleado,
                 Identificacion = e.Identificacion,
                 NumeroINSS = e.NumeroINSS,

@@ -1,4 +1,4 @@
-﻿using AsistenciaPyme.Domain.Entities;
+using AsistenciaPyme.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -45,6 +45,16 @@ namespace AsistenciaPyme.Application.Common.Interfaces
         DbSet<DispositivoMarcaje> DispositivosMarcaje { get; }
 
         DbSet<VerificacionPresencia> VerificacionesPresencia { get; }
+
+        DbSet<PeriodoEvaluacion> PeriodosEvaluacion { get; }
+
+        DbSet<CategoriaEvaluacion> CategoriasEvaluacion { get; }
+
+        DbSet<CriterioEvaluacion> CriteriosEvaluacion { get; }
+
+        DbSet<EvaluacionDesempeno> EvaluacionesDesempeno { get; }
+
+        DbSet<DetalleEvaluacionDesempeno> DetallesEvaluacionDesempeno { get; }
 
         Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
